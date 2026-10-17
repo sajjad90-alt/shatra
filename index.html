@@ -31,7 +31,7 @@ h3{margin:14px 0 8px}
 nav{position:fixed;bottom:0;right:0;left:0;display:flex;background:#fff;border-top:1px solid #dbe6e2;padding:6px 6px calc(env(safe-area-inset-bottom,0px) + 6px)}
 nav button{flex:1;background:none;color:var(--s);padding:8px 4px;font-size:14px;position:relative}
 nav button.on{color:var(--g);background:var(--m)}
-#bd{position:absolute;top:0;left:18%;background:var(--r);color:#fff;border-radius:10px;font-size:12px;min-width:20px;padding:0 5px}#bd:empty{display:none}
+#bd,#cn{position:absolute;top:0;left:18%;background:var(--r);color:#fff;border-radius:10px;font-size:12px;min-width:20px;padding:0 5px}#bd:empty,#cn:empty{display:none}.di{width:64px;height:64px;object-fit:cover;border-radius:10px;float:right;margin-left:10px}.k{cursor:pointer}
 label{display:flex;gap:8px;align-items:center;margin-bottom:10px}label input{width:auto;margin:0}
 </style>
 </head>
@@ -40,8 +40,9 @@ label{display:flex;gap:8px;align-items:center;margin-bottom:10px}label input{wid
 <main id="app"></main>
 <nav>
 <button data-v="search" onclick="A.v('search')">🔍 بحث</button>
+<button data-v="cart" onclick="A.v('cart')">🛒 السلة<span id="cn"></span></button>
 <button data-v="owner" onclick="A.v('owner')">🏥 صيدلية</button>
-<button data-v="admin" onclick="A.v('admin')">🛡️ الإدارة<span id="bd"></span></button>
+<button id="na" style="display:none" data-v="admin" onclick="A.v('admin')">🛡️ الإدارة<span id="bd"></span></button>
 </nav>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
@@ -58,7 +59,7 @@ const firebaseConfig = {
 };
 const ADMIN = "admin@shatra.app";
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
-let S = {v:"search", ov:"login", mode:"drug", q:"", user:null, me:null, ph:[], dr:[], all:[]}, unsub = null;
+let S = {v:"search", ov:"login", mode:"drug", q:"", user:null, me:null, ph:[], dr:[], all:[], cart:(()=>{try{return JSON.parse(localStorage.getItem("cart")||"[]")}catch(e){return[]}})(), pg:null, pq:"", tp:0, adm:0}, unsub = null;
 const $ = s => document.querySelector(s);
 const E = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const isAdmin = () => S.user && S.user.email === ADMIN;
@@ -66,6 +67,9 @@ const tel = p => String(p).replace(/\D/g, "");
 const wa = p => { let n = tel(p); if (n.startsWith("0")) n = "964" + n.slice(1); return "https://wa.me/" + n; };
 const val = id => ($("#" + id)?.value || "").trim();
 const err = e => alert("حدث خطأ: " + (e.code || e.message));
+const sv = () => { try { localStorage.setItem("cart", JSON.stringify(S.cart)); } catch (e) {} };
+const cn = () => { $("#cn").textContent = S.cart.reduce((a, x) => a + x.q, 0) || ""; };
+const shrink = f => new Promise(r => { if (!f) return r(""); const i = new Image(); i.onload = () => { const k = Math.min(1, 240 / Math.max(i.width, i.height)), c = document.createElement("canvas"); c.width = i.width * k; c.height = i.height * k; c.getContext("2d").drawImage(i, 0, 0, c.width, c.height); r(c.toDataURL("image/jpeg", .6)); }; i.onerror = () => r(""); i.src = URL.createObjectURL(f); });
 
 async function load() {
   try {
@@ -76,8 +80,10 @@ async function load() {
   } catch (e) { err(e); }
 }
 
-const card = (p, i) => `<div class="${i ? "s" : "c"}"><b>${E(p.name)}</b><div class="m">📍 ${E(p.address)}</div>
+const card = (p, i) => `<div class="${i ? "s" : "c"}"><b class="k" onclick="A.pg('${E(p.id)}')">${E(p.name)} ›</b><div class="m">📍 ${E(p.address)}</div>
 <div class="b"><a href="tel:${tel(p.phone)}">📞 اتصال</a><a href="${wa(p.phone)}">💬 واتساب</a></div></div>`;
+
+const drow = d => `${d.img ? `<img class="di" src="${d.img}">` : ""}<b>${E(d.name)}</b><span class="pr">${E(d.price)} د.ع</span><div style="clear:both"></div><button class="o w" style="margin-top:8px" onclick="A.cart('${E(d.id)}',this)">🛒 أضف للسلة</button>`;
 
 function res() {
   const q = S.q.trim().toLowerCase(), pm = Object.fromEntries(S.ph.map(p => [p.id, p]));
@@ -87,11 +93,14 @@ function res() {
   }
   if (!q) return '<p class="m">اكتب اسم الدواء لتظهر الصيدليات المتوفر فيها وأسعاره</p>';
   const l = S.dr.filter(d => pm[d.pharmacyId] && d.available !== false && d.name.toLowerCase().includes(q)).sort((a, b) => a.price - b.price);
-  return l.map(d => `<div class="c"><b>${E(d.name)}</b><span class="pr">${E(d.price)} د.ع</span>${card(pm[d.pharmacyId], 1)}</div>`).join("") || '<p class="m">لم نجد هذا الدواء في أي صيدلية</p>';
+  return l.map(d => `<div class="c">${drow(d)}${card(pm[d.pharmacyId], 1)}</div>`).join("") || '<p class="m">لم نجد هذا الدواء في أي صيدلية</p>';
 }
 
-const vSearch = () => `<div class="tg"><button class="${S.mode === "drug" ? "on" : ""}" onclick="A.mode('drug')">💊 دواء</button><button class="${S.mode === "ph" ? "on" : ""}" onclick="A.mode('ph')">🏥 صيدلية</button></div>
+const vSearch = () => S.pg ? vPh() : `<div class="tg"><button class="${S.mode === "drug" ? "on" : ""}" onclick="A.mode('drug')">💊 دواء</button><button class="${S.mode === "ph" ? "on" : ""}" onclick="A.mode('ph')">🏥 صيدلية</button></div>
 <input id="q" placeholder="${S.mode === "drug" ? "ابحث عن دواء..." : "ابحث عن صيدلية..."}" value="${E(S.q)}" oninput="A.q(this.value)"><div id="res">${res()}</div>`;
+
+const pl = () => { const q = S.pq.trim().toLowerCase(); return S.dr.filter(d => d.pharmacyId === S.pg && d.available !== false && d.name.toLowerCase().includes(q)).map(d => `<div class="c">${drow(d)}</div>`).join("") || '<p class="m">لا توجد أدوية</p>'; };
+const vPh = () => { const p = S.ph.find(x => x.id === S.pg); if (!p) { S.pg = null; return vSearch(); } return `<button class="o" onclick="A.pg(null)">→ رجوع</button><div style="height:10px"></div>${card(p)}<input placeholder="ابحث في أدوية هذه الصيدلية..." value="${E(S.pq)}" oninput="A.pq(this.value)"><div id="pl">${pl()}</div>`; };
 
 const outBtn = '<button class="o w" onclick="A.out()">تسجيل الخروج</button>';
 
@@ -110,9 +119,9 @@ function vOwner() {
   if (m.status === "pending") return head + '<p class="m">⏳ طلبك قيد المراجعة من الإدارة.</p>' + outBtn;
   if (m.status === "rejected") return head + '<p class="m">❌ تم رفض الطلب. تواصل مع الإدارة.</p>' + outBtn;
   const mine = S.dr.filter(d => d.pharmacyId === u.uid);
-  return head + `<h3>إضافة دواء</h3><input id="dn" placeholder="اسم الدواء"><input id="dp" type="number" inputmode="numeric" placeholder="السعر بالدينار">
+  return head + `<h3>إضافة دواء</h3><input id="dn" placeholder="اسم الدواء"><input id="dp" type="number" inputmode="numeric" placeholder="السعر بالدينار"><input id="di" type="file" accept="image/*">
 <button class="w" onclick="A.add()">إضافة</button><h3>أدويتي (${mine.length})</h3>` +
-    (mine.map(d => `<div class="c"><b>${E(d.name)}</b><span class="pr">${E(d.price)} د.ع</span>
+    (mine.map(d => `<div class="c">${d.img ? `<img class="di" src="${d.img}">` : ""}<b>${E(d.name)}</b><span class="pr">${E(d.price)} د.ع</span>
 <div class="m">${d.available === false ? "غير متوفر" : "متوفر"}</div>
 <div class="b"><button class="o" onclick="A.price('${E(d.id)}')">السعر</button><button class="o" onclick="A.tog('${E(d.id)}',${d.available === false})">${d.available === false ? "توفّر" : "نفد"}</button><button class="d" onclick="A.del('${E(d.id)}')">حذف</button></div></div>`).join("") || '<p class="m">لم تضف أي دواء بعد</p>') + outBtn;
 }
@@ -127,16 +136,32 @@ function vAdmin() {
     (ap.map(p => row(p, `<button class="d" onclick="A.rm('${E(p.id)}')">حذف الصيدلية</button>`)).join("") || '<p class="m">لا توجد صيدليات بعد</p>') + outBtn;
 }
 
+function vCart() {
+  if (!S.cart.length) return '<p class="m">السلة فارغة. أضف أدوية من تبويب البحث.</p>';
+  const g = {}; S.cart.forEach(x => (g[x.ph] = g[x.ph] || []).push(x));
+  return Object.entries(g).map(([id, l]) => {
+    const p = S.ph.find(x => x.id === id), t = l.reduce((a, x) => a + x.price * x.q, 0);
+    return `<div class="c"><b>${E(p ? p.name : "صيدلية")}</b>` + l.map(x => `<div class="s"><b>${E(x.name)}</b><span class="pr">${x.price * x.q} د.ع</span><div class="b"><button class="o" onclick="A.qty('${E(x.id)}',-1)">−</button><span class="m" style="align-self:center">${x.q}</span><button class="o" onclick="A.qty('${E(x.id)}',1)">+</button></div></div>`).join("") + `<h3>المجموع: ${t} د.ع</h3>` + (p ? `<button class="w" onclick="A.send('${E(id)}')">📤 أرسل الطلب عبر واتساب</button>` : "") + `</div>`;
+  }).join("") + '<button class="d w" onclick="A.clr()">تفريغ السلة</button>';
+}
+
 function render() {
   document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.v === S.v));
   const n = S.all.filter(x => x.status === "pending").length;
   $("#bd").textContent = isAdmin() && n ? n : "";
-  $("#app").innerHTML = ({search: vSearch, owner: vOwner, admin: vAdmin})[S.v]();
+  cn(); $("#na").style.display = S.adm || isAdmin() ? "" : "none";
+  $("#app").innerHTML = ({search: vSearch, cart: vCart, owner: vOwner, admin: vAdmin})[S.v]();
 }
 
 window.A = {
-  v(x) { S.v = x; render(); if (x === "search") load().then(() => $("#res") && ($("#res").innerHTML = res())); },
+  v(x) { S.v = x; S.pg = null; if (x === "owner") { if (++S.tp >= 5) S.adm = 1; } else S.tp = 0; render(); if (x === "search") load().then(() => $("#res") && ($("#res").innerHTML = res())); },
   mode(m) { S.mode = m; render(); },
+  pg(id) { S.pg = id; S.pq = ""; render(); },
+  pq(v) { S.pq = v; $("#pl").innerHTML = pl(); },
+  cart(id, b) { const d = S.dr.find(x => x.id === id); if (!d) return; const c = S.cart.find(x => x.id === id); c ? c.q++ : S.cart.push({id, name: d.name, price: d.price, ph: d.pharmacyId, q: 1}); sv(); cn(); if (b) b.textContent = "✔ أُضيف للسلة"; },
+  qty(id, n) { const c = S.cart.find(x => x.id === id); c.q += n; if (c.q < 1) S.cart = S.cart.filter(x => x !== c); sv(); render(); },
+  clr() { if (confirm("تفريغ السلة؟")) { S.cart = []; sv(); render(); } },
+  send(id) { const p = S.ph.find(x => x.id === id), l = S.cart.filter(x => x.ph === id); let t = 0; const m = "السلام عليكم، أريد طلب:\n" + l.map(x => { t += x.price * x.q; return `- ${x.name} × ${x.q} = ${x.price * x.q} د.ع`; }).join("\n") + `\nالمجموع: ${t} د.ع`; window.open(wa(p.phone) + "?text=" + encodeURIComponent(m), "_blank"); },
   q(v) { S.q = v; $("#res").innerHTML = res(); },
   ov(x) { S.ov = x; render(); },
   async reg() {
@@ -156,7 +181,7 @@ window.A = {
   async add() {
     const n = val("dn"), p = Number(val("dp"));
     if (!n || !(p > 0)) return alert("اكتب اسم الدواء وسعراً صحيحاً");
-    try { await addDoc(collection(db, "drugs"), {pharmacyId: S.user.uid, name: n, price: p, available: true}); await load(); render(); } catch (x) { err(x); }
+    try { const img = await shrink($("#di").files[0]); await addDoc(collection(db, "drugs"), {pharmacyId: S.user.uid, name: n, price: p, available: true, img}); await load(); render(); } catch (x) { err(x); }
   },
   async price(id) {
     const p = Number(prompt("السعر الجديد بالدينار:"));
