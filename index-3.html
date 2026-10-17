@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0F5C4D">
+<title>دليل صيدليات الشطرة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--g:#0F5C4D;--gd:#0A3F35;--p:#F3F7F5;--m:#D9EDE6;--a:#E8962E;--t:#16211E;--s:#5B6B66;--r:#C0392B}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+body{font-family:Cairo,Tahoma,sans-serif;background:var(--p);color:var(--t);padding-bottom:84px}
+header{background:var(--g);color:#fff;padding:calc(env(safe-area-inset-top,0px) + 16px) 16px 18px;font-size:22px;font-weight:800}
+header small{display:block;font-size:13px;font-weight:400;opacity:.8}
+main{padding:14px;max-width:560px;margin:auto}
+input{width:100%;padding:13px;border:1.5px solid #c5d6d0;border-radius:12px;font:inherit;background:#fff;margin-bottom:10px}
+input:focus{outline:2px solid var(--g);border-color:var(--g)}
+button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:11px 14px;background:var(--g);color:#fff;font-weight:700}
+button.o{background:var(--m);color:var(--gd)}button.d{background:#f6dcd8;color:var(--r)}
+.w{width:100%}
+.tg{display:flex;gap:8px;margin-bottom:10px}.tg button{flex:1;background:var(--m);color:var(--gd)}.tg button.on{background:var(--g);color:#fff}
+.c{background:#fff;border-radius:16px;padding:14px;margin-bottom:10px;border:1px solid #dbe6e2}
+.s{background:var(--p);border-radius:12px;padding:10px;margin-top:8px}
+.m{color:var(--s);font-size:14px;margin:4px 0}
+.pr{float:left;background:var(--a);color:#fff;border-radius:10px;padding:2px 10px;font-weight:800}
+.b{display:flex;gap:8px;margin-top:8px}.b a{flex:1;text-align:center;text-decoration:none;background:var(--m);color:var(--gd);border-radius:10px;padding:9px;font-weight:700}
+.b button{flex:1;padding:9px}
+h3{margin:14px 0 8px}
+nav{position:fixed;bottom:0;right:0;left:0;display:flex;background:#fff;border-top:1px solid #dbe6e2;padding:6px 6px calc(env(safe-area-inset-bottom,0px) + 6px)}
+nav button{flex:1;background:none;color:var(--s);padding:8px 4px;font-size:14px;position:relative}
+nav button.on{color:var(--g);background:var(--m)}
+#bd{position:absolute;top:0;left:18%;background:var(--r);color:#fff;border-radius:10px;font-size:12px;min-width:20px;padding:0 5px}#bd:empty{display:none}
+label{display:flex;gap:8px;align-items:center;margin-bottom:10px}label input{width:auto;margin:0}
+</style>
+</head>
+<body>
+<header>💊 دليل صيدليات الشطرة<small>ابحث عن الدواء وأرخص سعر قريب منك</small></header>
+<main id="app"></main>
+<nav>
+<button data-v="search" onclick="A.v('search')">🔍 بحث</button>
+<button data-v="owner" onclick="A.v('owner')">🏥 صيدلية</button>
+<button data-v="admin" onclick="A.v('admin')">🛡️ الإدارة<span id="bd"></span></button>
+</nav>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {getFirestore,collection,doc,setDoc,getDoc,getDocs,addDoc,updateDoc,deleteDoc,query,where,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCun8KAeQ1t92RQGAiSXML_S7p2nugn204",
+  authDomain: "pharmacy-shatra.firebaseapp.com",
+  projectId: "pharmacy-shatra",
+  storageBucket: "pharmacy-shatra.firebasestorage.app",
+  messagingSenderId: "841117126458",
+  appId: "1:841117126458:web:99a07553ee4e2dc5d40a03"
+};
+const ADMIN = "admin@shatra.app";
+const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
+let S = {v:"search", ov:"login", mode:"drug", q:"", user:null, me:null, ph:[], dr:[], all:[]}, unsub = null;
+const $ = s => document.querySelector(s);
+const E = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const isAdmin = () => S.user && S.user.email === ADMIN;
+const tel = p => String(p).replace(/\D/g, "");
+const wa = p => { let n = tel(p); if (n.startsWith("0")) n = "964" + n.slice(1); return "https://wa.me/" + n; };
+const val = id => ($("#" + id)?.value || "").trim();
+const err = e => alert("حدث خطأ: " + (e.code || e.message));
+
+async function load() {
+  try {
+    const a = await getDocs(query(collection(db, "pharmacies"), where("status", "==", "approved")));
+    S.ph = a.docs.map(d => ({id: d.id, ...d.data()}));
+    const b = await getDocs(collection(db, "drugs"));
+    S.dr = b.docs.map(d => ({id: d.id, ...d.data()}));
+  } catch (e) { err(e); }
+}
+
+const card = (p, i) => `<div class="${i ? "s" : "c"}"><b>${E(p.name)}</b><div class="m">📍 ${E(p.address)}</div>
+<div class="b"><a href="tel:${tel(p.phone)}">📞 اتصال</a><a href="${wa(p.phone)}">💬 واتساب</a></div></div>`;
+
+function res() {
+  const q = S.q.trim().toLowerCase(), pm = Object.fromEntries(S.ph.map(p => [p.id, p]));
+  if (S.mode === "ph") {
+    const l = S.ph.filter(p => !q || p.name.toLowerCase().includes(q));
+    return l.map(p => card(p)).join("") || '<p class="m">لا توجد صيدليات مطابقة</p>';
+  }
+  if (!q) return '<p class="m">اكتب اسم الدواء لتظهر الصيدليات المتوفر فيها وأسعاره</p>';
+  const l = S.dr.filter(d => pm[d.pharmacyId] && d.available !== false && d.name.toLowerCase().includes(q)).sort((a, b) => a.price - b.price);
+  return l.map(d => `<div class="c"><b>${E(d.name)}</b><span class="pr">${E(d.price)} د.ع</span>${card(pm[d.pharmacyId], 1)}</div>`).join("") || '<p class="m">لم نجد هذا الدواء في أي صيدلية</p>';
+}
+
+const vSearch = () => `<div class="tg"><button class="${S.mode === "drug" ? "on" : ""}" onclick="A.mode('drug')">💊 دواء</button><button class="${S.mode === "ph" ? "on" : ""}" onclick="A.mode('ph')">🏥 صيدلية</button></div>
+<input id="q" placeholder="${S.mode === "drug" ? "ابحث عن دواء..." : "ابحث عن صيدلية..."}" value="${E(S.q)}" oninput="A.q(this.value)"><div id="res">${res()}</div>`;
+
+const outBtn = '<button class="o w" onclick="A.out()">تسجيل الخروج</button>';
+
+function vOwner() {
+  const u = S.user;
+  if (!u || isAdmin()) {
+    if (S.ov === "reg") return `<h3>طلب إضافة صيدلية</h3><p class="m">بعد إرسال الطلب تراجعه الإدارة وتقبله أو ترفضه.</p>
+<input id="n" placeholder="اسم الصيدلية"><input id="a" placeholder="العنوان (مثال: الشطرة - السوق)"><input id="p" type="tel" placeholder="رقم الهاتف / واتساب">
+<input id="e" type="email" placeholder="الإيميل"><input id="w" type="password" placeholder="كلمة المرور (6 أحرف على الأقل)">
+<button class="w" onclick="A.reg()">إرسال الطلب</button><button class="o w" style="margin-top:8px" onclick="A.ov('login')">لدي حساب</button>`;
+    return `<h3>دخول صاحب صيدلية</h3><input id="e" type="email" placeholder="الإيميل"><input id="w" type="password" placeholder="كلمة المرور">
+<button class="w" onclick="A.login()">دخول</button><button class="o w" style="margin-top:8px" onclick="A.ov('reg')">➕ إضافة صيدلية جديدة</button>`;
+  }
+  if (!S.me) return '<p class="m">جارٍ التحميل...</p>' + outBtn;
+  const m = S.me, head = `<div class="c"><b>${E(m.name)}</b><div class="m">${E(u.email)}</div></div>`;
+  if (m.status === "pending") return head + '<p class="m">⏳ طلبك قيد المراجعة من الإدارة.</p>' + outBtn;
+  if (m.status === "rejected") return head + '<p class="m">❌ تم رفض الطلب. تواصل مع الإدارة.</p>' + outBtn;
+  const mine = S.dr.filter(d => d.pharmacyId === u.uid);
+  return head + `<h3>إضافة دواء</h3><input id="dn" placeholder="اسم الدواء"><input id="dp" type="number" inputmode="numeric" placeholder="السعر بالدينار">
+<button class="w" onclick="A.add()">إضافة</button><h3>أدويتي (${mine.length})</h3>` +
+    (mine.map(d => `<div class="c"><b>${E(d.name)}</b><span class="pr">${E(d.price)} د.ع</span>
+<div class="m">${d.available === false ? "غير متوفر" : "متوفر"}</div>
+<div class="b"><button class="o" onclick="A.price('${E(d.id)}')">السعر</button><button class="o" onclick="A.tog('${E(d.id)}',${d.available === false})">${d.available === false ? "توفّر" : "نفد"}</button><button class="d" onclick="A.del('${E(d.id)}')">حذف</button></div></div>`).join("") || '<p class="m">لم تضف أي دواء بعد</p>') + outBtn;
+}
+
+function vAdmin() {
+  if (!isAdmin()) return `<h3>دخول الإدارة</h3><input id="k" type="password" placeholder="مفتاح الإدارة"><button class="w" onclick="A.adm()">دخول</button>`;
+  const pe = S.all.filter(x => x.status === "pending"), ap = S.all.filter(x => x.status === "approved");
+  const row = (p, btns) => `<div class="c"><b>${E(p.name)}</b><div class="m">📍 ${E(p.address)} · 📞 ${E(p.phone)}</div><div class="m">${E(p.email)}</div><div class="b">${btns}</div></div>`;
+  return `<h3>طلبات الانضمام (${pe.length})</h3>` +
+    (pe.map(p => row(p, `<button onclick="A.set('${E(p.id)}','approved')">قبول</button><button class="d" onclick="A.set('${E(p.id)}','rejected')">رفض</button>`)).join("") || '<p class="m">لا توجد طلبات جديدة</p>') +
+    `<h3>الصيدليات المعتمدة (${ap.length})</h3>` +
+    (ap.map(p => row(p, `<button class="d" onclick="A.rm('${E(p.id)}')">حذف الصيدلية</button>`)).join("") || '<p class="m">لا توجد صيدليات بعد</p>') + outBtn;
+}
+
+function render() {
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.v === S.v));
+  const n = S.all.filter(x => x.status === "pending").length;
+  $("#bd").textContent = isAdmin() && n ? n : "";
+  $("#app").innerHTML = ({search: vSearch, owner: vOwner, admin: vAdmin})[S.v]();
+}
+
+window.A = {
+  v(x) { S.v = x; render(); if (x === "search") load().then(() => $("#res") && ($("#res").innerHTML = res())); },
+  mode(m) { S.mode = m; render(); },
+  q(v) { S.q = v; $("#res").innerHTML = res(); },
+  ov(x) { S.ov = x; render(); },
+  async reg() {
+    const n = val("n"), a = val("a"), p = val("p"), e = val("e"), w = $("#w").value;
+    if (!n || !a || !p || !e || w.length < 6) return alert("أكمل كل الحقول (كلمة المرور 6 أحرف على الأقل)");
+    try {
+      const c = await createUserWithEmailAndPassword(auth, e, w);
+      await setDoc(doc(db, "pharmacies", c.user.uid), {name: n, address: a, phone: p, email: e, status: "pending", createdAt: serverTimestamp()});
+      await signOut(auth);
+      S.ov = "login"; render();
+      alert("تم إرسال طلبك للإدارة. سجّل الدخول لاحقاً لمعرفة النتيجة.");
+    } catch (x) { err(x); }
+  },
+  async login() { try { await signInWithEmailAndPassword(auth, val("e"), $("#w").value); } catch (x) { err(x); } },
+  async adm() { try { await signInWithEmailAndPassword(auth, ADMIN, $("#k").value); } catch (x) { alert((x.code === "auth/invalid-credential" || x.code === "auth/wrong-password") ? "مفتاح الإدارة غير صحيح، أو لم يُنشأ حساب admin@shatra.app في Firebase" : "حدث خطأ: " + x.code); } },
+  async out() { await signOut(auth); },
+  async add() {
+    const n = val("dn"), p = Number(val("dp"));
+    if (!n || !(p > 0)) return alert("اكتب اسم الدواء وسعراً صحيحاً");
+    try { await addDoc(collection(db, "drugs"), {pharmacyId: S.user.uid, name: n, price: p, available: true}); await load(); render(); } catch (x) { err(x); }
+  },
+  async price(id) {
+    const p = Number(prompt("السعر الجديد بالدينار:"));
+    if (!(p > 0)) return;
+    try { await updateDoc(doc(db, "drugs", id), {price: p}); await load(); render(); } catch (x) { err(x); }
+  },
+  async tog(id, v) { try { await updateDoc(doc(db, "drugs", id), {available: v}); await load(); render(); } catch (x) { err(x); } },
+  async del(id) { if (!confirm("حذف هذا الدواء؟")) return; try { await deleteDoc(doc(db, "drugs", id)); await load(); render(); } catch (x) { err(x); } },
+  async set(id, s) { try { await updateDoc(doc(db, "pharmacies", id), {status: s}); await load(); } catch (x) { err(x); } },
+  async rm(id) { if (!confirm("حذف الصيدلية نهائياً؟")) return; try { await deleteDoc(doc(db, "pharmacies", id)); await load(); } catch (x) { err(x); } }
+};
+
+onAuthStateChanged(auth, async u => {
+  S.user = u; S.me = null; S.all = [];
+  if (unsub) { unsub(); unsub = null; }
+  if (u && u.email === ADMIN) {
+    unsub = onSnapshot(collection(db, "pharmacies"), s => { S.all = s.docs.map(d => ({id: d.id, ...d.data()})); render(); }, err);
+  } else if (u) {
+    try { const d = await getDoc(doc(db, "pharmacies", u.uid)); S.me = d.exists() ? {id: d.id, ...d.data()} : null; } catch (e) {}
+  }
+  render();
+});
+load().then(render);
+render();
+</script>
+</body>
+</html>
