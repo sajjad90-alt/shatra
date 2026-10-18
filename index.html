@@ -132,6 +132,9 @@ nav button.on{background:linear-gradient(160deg,#17428F,#0B2559);box-shadow:0 10
 body::before{opacity:.16}
 body{min-height:100vh;display:flex;flex-direction:column;box-sizing:border-box;padding-bottom:104px}header{flex:none}main{width:100%;margin:0 auto}
 .cat .b{gap:8px}.cat .b input{margin:0;flex:1;padding:12px 16px}.cat .b button{white-space:nowrap}
+.pop .pn{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:7px}.pop .pn b{flex:none;line-height:1.35;word-break:break-word}
+.pop .ib{overflow:hidden}.pop .ib img{width:100%;height:100%;object-fit:cover}
+.di{cursor:zoom-in}.zm{position:fixed;inset:0;z-index:99;background:rgba(11,37,89,.82);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px;animation:fi .2s ease}.zm img{max-width:100%;max-height:80vh;border-radius:22px;background:#fff;box-shadow:0 20px 50px rgba(0,0,0,.5)}
 </style>
 </head>
 <body>
@@ -212,7 +215,7 @@ const loadImgs = () => { if (S.imgsLoaded) return; S.imgsLoaded = true; getDocs(
 const catHtml = q => {
   const mine = new Set(S.dr.filter(d => d.pharmacyId === S.user?.uid).map(d => nz(d.name))), k = nz(q);
   const l = S.cat.map((c, i) => ({c, i})).filter(x => !mine.has(nz(cname(x.c))) && (!k || nz(cname(x.c) + " " + x.c.en).includes(k)));
-  return l.slice(0, 30).map(({c, i}) => `<div class="c cat"><img class="di" src="${S.imgs[ckey(c)] || iconFor(c.f)}"><b>${E(cname(c))}</b><div class="m">${E(c.en)} · ${FL[c.f]}</div><div class="m" style="margin-top:8px">صورة العلبة (اختياري)</div><input id="cf${i}" type="file" accept="image/*" style="margin:4px 0 8px;padding:10px 14px"><div class="b"><input id="cp${i}" type="number" inputmode="numeric" placeholder="السعر بالدينار"><button onclick="A.cadd(${i})">إضافة</button></div></div>`).join("") + (l.length > 30 ? `<p class="m">يوجد ${l.length - 30} نتيجة أخرى، اكتب للبحث</p>` : "") || '<p class="m">لا توجد نتائج</p>';
+  return l.slice(0, 30).map(({c, i}) => `<div class="c cat"><img class="di" onclick="A.zoom(this.src)" src="${S.imgs[ckey(c)] || iconFor(c.f)}"><b>${E(cname(c))}</b><div class="m">${E(c.en)} · ${FL[c.f]}</div><div class="m" style="margin-top:8px">صورة العلبة (اختياري)</div><input id="cf${i}" type="file" accept="image/*" style="margin:4px 0 8px;padding:10px 14px"><div class="b"><input id="cp${i}" type="number" inputmode="numeric" placeholder="السعر بالدينار"><button onclick="A.cadd(${i})">إضافة</button></div></div>`).join("") + (l.length > 30 ? `<p class="m">يوجد ${l.length - 30} نتيجة أخرى، اكتب للبحث</p>` : "") || '<p class="m">لا توجد نتائج</p>';
 };
 const catSec = () => S.cat.length ? (loadImgs(), `<h3>أدوية العراق الشائعة</h3><p class="m">اختر الدواء واكتب سعرك فقط، فيُضاف بصورته إلى صيدليتك.</p><input id="cq" placeholder="ابحث في القائمة (عربي أو English)..." oninput="A.cq()"><div id="cl">${catHtml("")}</div>`) : "";
 fetch("catalog.json").then(r => r.json()).then(j => { S.cat = j; if (S.v === "owner") render(); }).catch(() => {});
@@ -231,13 +234,13 @@ async function load() {
 const card = (p, i) => `<div class="${i ? "s" : "c"}"><b class="k" onclick="A.pg('${E(p.id)}')">${E(p.name)} ›</b><div class="m">${ic("pin")}${E(p.address)}</div>
 <div class="b"><a href="tel:${tel(p.phone)}">${ic("phone")}اتصال</a><a href="${wa(p.phone)}">${ic("chat")}واتساب</a></div></div>`;
 
-const drow = d => `${d.img ? `<img class="di" src="${d.img}">` : ""}<b>${E(d.name)}</b><span class="pr">${E(d.price)} د.ع</span><div style="clear:both"></div><button class="o w" style="margin-top:8px" onclick="A.cart('${E(d.id)}',this)">${ic("cart")}أضف للسلة</button>`;
+const drow = d => `${d.img ? `<img class="di" onclick="A.zoom(this.src)" src="${d.img}">` : ""}<b>${E(d.name)}</b><span class="pr">${E(d.price)} د.ع</span><div style="clear:both"></div><button class="o w" style="margin-top:8px" onclick="A.cart('${E(d.id)}',this)">${ic("cart")}أضف للسلة</button>`;
 
 const nz = s => String(s || "").toLowerCase().replace(/[\u064B-\u065F\u0640]/g, "").replace(/[أإآ]/g, "ا").replace(/ى/g, "ي").replace(/ة/g, "ه").replace(/ؤ/g, "و").replace(/ئ/g, "ي").replace(/\s+/g, " ").trim();
 const lev = (a, b) => { const m = a.length, n = b.length, d = Array.from({length: m + 1}, (_, i) => { const r = Array(n + 1).fill(0); r[0] = i; return r; }); for (let j = 1; j <= n; j++) d[0][j] = j; for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[m][n]; };
 const dist = (name, q) => { const n = nz(name); if (n.includes(q)) return 0; const t = q.length >= 6 ? 2 : q.length >= 4 ? 1 : 0; let best = 9; for (const w of n.split(" ")) best = Math.min(best, lev(q, w), lev(q, w.slice(0, q.length))); return best <= t ? best : 9; };
-const popular = () => { const ok = new Set(S.ph.map(p => p.id)), m = {}; S.dr.forEach(d => { if (!ok.has(d.pharmacyId) || d.available === false) return; const k = nz(d.name); (m[k] = m[k] || {n: d.name, s: new Set()}).s.add(d.pharmacyId); }); return Object.values(m).sort((a, b) => b.s.size - a.s.size).slice(0, 5); };
-const dres = (d, p, best) => `<div class="c">${d.img ? `<img class="di" src="${d.img}">` : ""}<div class="r"><span><b>${E(d.name)}</b>${best ? '<span class="bg">الأرخص</span>' : ""}</span><span class="pr">${E(d.price)} د.ع</span></div><div class="r2"><span class="k" onclick="A.pg('${E(p.id)}')"><span class="av">${E(p.name.trim().charAt(0))}</span>${E(p.name)} ›</span><span class="ia"><a href="tel:${tel(p.phone)}">${ic("phone")}</a><a href="${wa(p.phone)}">${ic("chat")}</a><button onclick="A.cart('${E(d.id)}',this)">${ic("cart")}</button></span></div></div>`;
+const popular = () => { const ok = new Set(S.ph.map(p => p.id)), m = {}; S.dr.forEach(d => { if (!ok.has(d.pharmacyId) || d.available === false) return; const k = nz(d.name); const e = (m[k] = m[k] || {n: d.name, s: new Set(), img: ""}); e.s.add(d.pharmacyId); if (!e.img && d.img) e.img = d.img; }); return Object.values(m).sort((a, b) => b.s.size - a.s.size).slice(0, 5); };
+const dres = (d, p, best) => `<div class="c">${d.img ? `<img class="di" onclick="A.zoom(this.src)" src="${d.img}">` : ""}<div class="r"><span><b>${E(d.name)}</b>${best ? '<span class="bg">الأرخص</span>' : ""}</span><span class="pr">${E(d.price)} د.ع</span></div><div class="r2"><span class="k" onclick="A.pg('${E(p.id)}')"><span class="av">${E(p.name.trim().charAt(0))}</span>${E(p.name)} ›</span><span class="ia"><a href="tel:${tel(p.phone)}">${ic("phone")}</a><a href="${wa(p.phone)}">${ic("chat")}</a><button onclick="A.cart('${E(d.id)}',this)">${ic("cart")}</button></span></div></div>`;
 
 function res() {
   if (!S.loaded) return '<p class="m">جارٍ التحميل...</p>';
@@ -248,7 +251,7 @@ function res() {
   }
   if (!q) {
     S.pop = popular();
-    return (S.pop.length ? "<h3>أدوية شائعة</h3>" + S.pop.map((x, i) => `<div class="pop k t${i % 4}" onclick="A.pick('pop',${i})"><span class="ib">${ic("pill")}</span><b>${E(x.n)}</b><span class="bq">${ic("store")}متوفر في ${x.s.size} صيدلية</span><span class="cv">‹</span></div>`).join("") : '<p class="m">ستظهر هنا الأدوية الشائعة عندما تضيف الصيدليات أدويتها.</p>') ;
+    return (S.pop.length ? "<h3>أدوية شائعة</h3>" + S.pop.map((x, i) => `<div class="pop k t${i % 4}" onclick="A.pick('pop',${i})"><span class="ib">${x.img ? `<img src="${x.img}" alt="">` : ic("pill")}</span><div class="pn"><b>${E(x.n)}</b><span class="bq">${ic("store")}متوفر في ${x.s.size} صيدلية</span></div><span class="cv">‹</span></div>`).join("") : '<p class="m">ستظهر هنا الأدوية الشائعة عندما تضيف الصيدليات أدويتها.</p>') ;
   }
   const l = S.dr.filter(d => pm[d.pharmacyId] && d.available !== false).map(d => ({d, k: dist(d.name + " " + (d.en || ""), q)})).filter(x => x.k < 9);
   if (!l.length) return `<p class="m">لم نجد «${E(S.q)}». جرّب كلمة أخرى أو اكتب جزءاً من الاسم.</p>`;
@@ -292,7 +295,7 @@ function vOwner() {
   const mine = S.dr.filter(d => d.pharmacyId === u.uid);
   return head + `<h3>إضافة دواء</h3><input id="dn" placeholder="اسم الدواء"><input id="dp" type="number" inputmode="numeric" placeholder="السعر بالدينار"><input id="di" type="file" accept="image/*">
 <button class="w" onclick="A.add()">إضافة</button><h3>أدويتي (${mine.length})</h3>` +
-    (mine.map(d => `<div class="c">${d.img ? `<img class="di" src="${d.img}">` : ""}<b>${E(d.name)}</b><span class="pr">${E(d.price)} د.ع</span>
+    (mine.map(d => `<div class="c">${d.img ? `<img class="di" onclick="A.zoom(this.src)" src="${d.img}">` : ""}<b>${E(d.name)}</b><span class="pr">${E(d.price)} د.ع</span>
 <div class="m">${d.available === false ? "غير متوفر" : "متوفر"}</div>
 <div class="b"><button class="o" onclick="A.price('${E(d.id)}')">السعر</button><button class="o" onclick="A.pic('${E(d.id)}')">صورة</button><button class="o" onclick="A.tog('${E(d.id)}',${d.available === false})">${d.available === false ? "توفّر" : "نفد"}</button><button class="d" onclick="A.del('${E(d.id)}')">حذف</button></div></div>`).join("") || '<p class="m">لم تضف أي دواء بعد</p>') + catSec() + outBtn;
 }
@@ -358,6 +361,7 @@ window.A = {
     try { const img = await shrink($("#di").files[0]); await addDoc(collection(db, "drugs"), {pharmacyId: S.user.uid, name: n, price: p, available: true, img}); await load(); render(); } catch (x) { err(x); }
   },
   pic(id) { const f = document.createElement("input"); f.type = "file"; f.accept = "image/*"; f.onchange = async () => { try { const img = await shrink(f.files[0]); if (!img) return; await updateDoc(doc(db, "drugs", id), {img}); await load(); render(); } catch (x) { err(x); } }; f.click(); },
+  zoom(src) { const z = document.createElement("div"); z.className = "zm"; z.innerHTML = `<img src="${src}" alt="">`; z.onclick = () => z.remove(); document.body.appendChild(z); },
   cq() { const e = $("#cl"); if (e) e.innerHTML = catHtml(val("cq")); },
   async cadd(i) {
     const c = S.cat[i], p = Number(val("cp" + i));
