@@ -61,7 +61,7 @@ const firebaseConfig = {
 };
 const ADMIN = "admin@shatra.app";
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
-let S = {v:"search", ov:"login", mode:"drug", q:"", user:null, me:null, ph:[], dr:[], all:[], cart:(()=>{try{return JSON.parse(localStorage.getItem("cart")||"[]")}catch(e){return[]}})(), pg:null, pq:"", pop:[], sg:[], loaded:false, tp:0, adm:0}, unsub = null;
+let S = {v:"search", ov:"login", mode:"drug", q:"", user:null, me:null, ph:[], dr:[], all:[], cart:(()=>{try{return JSON.parse(localStorage.getItem("cart")||"[]")}catch(e){return[]}})(), pg:null, pq:"", pop:[], sg:[], loaded:false, meDone:false, meErr:"", tp:0, adm:0}, unsub = null;
 const $ = s => document.querySelector(s);
 const E = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const isAdmin = () => S.user && S.user.email === ADMIN;
@@ -160,7 +160,11 @@ function vOwner() {
     return `<button class="o w" style="margin-bottom:10px" onclick="A.ov('reg')">${ic("plus")}إضافة صيدلية</button><input id="e" type="email" placeholder="الإيميل"><input id="w" type="password" placeholder="كلمة المرور">
 <button class="w" onclick="A.login()">دخول</button>`;
   }
-  if (!S.me) return '<p class="m">جارٍ التحميل...</p>' + outBtn;
+  if (!S.me) {
+    if (!S.meDone) return '<p class="m">جارٍ التحميل...</p>' + outBtn;
+    if (S.meErr) return `<p class="m">تعذر تحميل بيانات الصيدلية (${E(S.meErr)}).</p><button class="w" onclick="A.again()">إعادة المحاولة</button><div style="height:8px"></div>` + outBtn;
+    return `<h3>إكمال طلب الصيدلية</h3><p class="m">لا يوجد طلب صيدلية مرتبط بهذا الحساب (${E(u.email)}). أدخل بيانات الصيدلية لإرسال الطلب للإدارة.</p><input id="n" placeholder="اسم الصيدلية"><input id="a" placeholder="العنوان"><input id="p" type="tel" placeholder="رقم الهاتف / واتساب"><button class="w" onclick="A.fix()">إرسال الطلب</button><div style="height:8px"></div>` + outBtn;
+  }
   const m = S.me, head = `<div class="c"><b>${E(m.name)}</b><div class="m">${E(u.email)}</div></div>`;
   if (m.status === "pending") return head + '<p class="m">طلبك قيد المراجعة من الإدارة.</p>' + outBtn;
   if (m.status === "rejected") return head + '<p class="m">تم رفض الطلب. تواصل مع الإدارة.</p>' + outBtn;
@@ -222,6 +226,8 @@ window.A = {
       say("تم إرسال طلبك للإدارة. سجّل الدخول لاحقاً لمعرفة النتيجة.");
     } catch (x) { err(x); }
   },
+  async again() { S.meDone = false; S.meErr = ""; render(); try { const d = await getDoc(doc(db, "pharmacies", S.user.uid)); S.me = d.exists() ? {id: d.id, ...d.data()} : null; } catch (e) { S.meErr = e.code || "error"; } S.meDone = true; render(); },
+  async fix() { const n = val("n"), a = val("a"), p = val("p"); if (!n || !a || !p) return say("أكمل كل الحقول"); try { await setDoc(doc(db, "pharmacies", S.user.uid), {name: n, address: a, phone: p, email: S.user.email, status: "pending", createdAt: serverTimestamp()}); await A.again(); say("تم إرسال طلبك للإدارة."); } catch (x) { err(x); } },
   async login() { try { await signInWithEmailAndPassword(auth, val("e"), $("#w").value); } catch (x) { err(x); } },
   async adm() { try { await signInWithEmailAndPassword(auth, ADMIN, $("#k").value); } catch (x) { say((x.code === "auth/invalid-credential" || x.code === "auth/wrong-password") ? "مفتاح الإدارة غير صحيح، أو لم يُنشأ حساب admin@shatra.app في Firebase" : "حدث خطأ: " + x.code); } },
   async out() { await signOut(auth); },
@@ -243,12 +249,13 @@ window.A = {
 
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 onAuthStateChanged(auth, async u => {
-  S.user = u; S.me = null; S.all = [];
+  S.user = u; S.me = null; S.all = []; S.meDone = !u; S.meErr = "";
   if (unsub) { unsub(); unsub = null; }
   if (u && u.email === ADMIN) {
     unsub = onSnapshot(collection(db, "pharmacies"), s => { S.all = s.docs.map(d => ({id: d.id, ...d.data()})); render(); }, err);
   } else if (u) {
-    try { const d = await getDoc(doc(db, "pharmacies", u.uid)); S.me = d.exists() ? {id: d.id, ...d.data()} : null; } catch (e) {}
+    try { const d = await getDoc(doc(db, "pharmacies", u.uid)); S.me = d.exists() ? {id: d.id, ...d.data()} : null; } catch (e) { S.meErr = e.code || "error"; }
+    S.meDone = true;
   }
   render();
 });
