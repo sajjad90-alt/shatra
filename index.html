@@ -12,7 +12,7 @@
 :root{--g:#DC93AE;--gd:#6B1D3E;--p:#F7D9E3;--m:#E7A8BE;--a:#8F2A52;--t:#7A2346;--s:#9A4A6B;--r:#C0392B;--c:#F1C6D6;--n:#EDB9CB;--bd:#E2A9BD;--on:#5E1535;--ca:#FFD6E4}
 *{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
 body{font-family:Cairo,Tahoma,sans-serif;background:var(--p);color:var(--t);padding-bottom:84px}
-header{background:var(--n);color:var(--t);border-bottom:1px solid var(--bd);padding:calc(env(safe-area-inset-top,0px) + 16px) 16px 18px;font-size:22px;font-weight:800}
+header{position:sticky;top:0;z-index:5;background:var(--n);color:var(--t);border-bottom:1px solid var(--bd);padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 10px;font-size:18px;font-weight:800}
 header small{display:block;font-size:13px;font-weight:400;color:var(--s)}
 main{padding:14px;max-width:560px;margin:auto}
 input{width:100%;padding:13px;border:1.5px solid var(--bd);border-radius:12px;font:inherit;color:var(--t);background:var(--c);margin-bottom:10px}
@@ -21,7 +21,7 @@ input:focus{outline:2px solid var(--on);border-color:var(--on)}
 button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:11px 14px;background:var(--g);color:var(--on);font-weight:700}
 button.o{background:var(--m);color:var(--gd)}button.d{background:#D98A93;color:#7A1F2E}
 .w{width:100%}
-.tg{display:flex;gap:8px;margin-bottom:10px}.tg button{flex:1;background:var(--m);color:var(--gd)}.tg button.on{background:var(--g);color:var(--on)}
+.tg{display:flex;gap:8px;margin-bottom:10px}.tg button{padding:8px;flex:1;background:var(--m);color:var(--gd)}.tg button.on{background:var(--g);color:var(--on)}
 .c{background:var(--c);border-radius:16px;padding:14px;margin-bottom:10px;border:1px solid var(--bd)}
 .s{background:var(--p);border-radius:12px;padding:10px;margin-top:8px}
 .m{color:var(--s);font-size:14px;margin:4px 0}
@@ -31,18 +31,19 @@ button.o{background:var(--m);color:var(--gd)}button.d{background:#D98A93;color:#
 h3{margin:14px 0 8px}
 nav{position:fixed;bottom:0;right:0;left:0;display:flex;background:var(--n);border-top:1px solid var(--bd);padding:6px 6px calc(env(safe-area-inset-bottom,0px) + 6px)}
 nav button{flex:1;background:none;color:var(--s);padding:8px 4px;font-size:14px;position:relative}
-nav button.on{color:#9C2F5C;background:none}
-#bd,#cn{position:absolute;top:0;left:18%;background:var(--r);color:var(--ca);border-radius:10px;font-size:12px;min-width:20px;padding:0 5px}#bd:empty,#cn:empty{display:none}.di{width:64px;height:64px;object-fit:cover;border-radius:10px;float:right;margin-left:10px}.k{cursor:pointer}.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-4px;margin-inline-end:6px}header .i{width:26px;height:26px;vertical-align:-5px}nav .i{display:block;margin:0 auto 2px}.md{position:fixed;inset:0;background:rgba(94,21,53,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:99}.mb{background:var(--c);border-radius:18px;padding:18px;width:100%;max-width:340px}.mb p{margin-bottom:12px;font-weight:700}
+nav button.on{color:#9C2F5C;background:none}nav button.on .i{background:var(--g);color:var(--on);width:34px;height:22px;padding:3px 8px;border-radius:11px}
+#bd,#cn{position:absolute;top:0;left:18%;background:var(--r);color:var(--ca);border-radius:10px;font-size:12px;min-width:20px;padding:0 5px}#bd:empty,#cn:empty{display:none}.di{width:64px;height:64px;object-fit:cover;border-radius:10px;float:right;margin-left:10px}.k{cursor:pointer}.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-4px;margin-inline-end:6px}header .i{width:22px;height:22px;vertical-align:-4px}nav .i{display:block;margin:0 auto 2px}.md{position:fixed;inset:0;background:rgba(94,21,53,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:99}.mb{background:var(--c);border-radius:18px;padding:18px;width:100%;max-width:340px}.mb p{margin-bottom:12px;font-weight:700}
+.av{width:22px;height:22px;border-radius:50%;background:var(--g);color:var(--on);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;margin-inline-end:6px;flex:none}.bg{background:var(--g);color:var(--on);border-radius:8px;padding:1px 8px;font-weight:700;font-size:12px;margin-inline:6px}.r{display:flex;align-items:center;justify-content:space-between;gap:6px}.r2{display:flex;justify-content:space-between;align-items:center;margin-top:10px}.ia{display:flex;gap:6px}.ia a,.ia button{background:var(--m);color:var(--gd);border-radius:9px;padding:7px 10px;display:inline-flex;text-decoration:none}.ia .i{margin:0}.pop{display:flex;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--bd)}.pop b{flex:1;font-weight:700}.ib{width:30px;height:30px;border-radius:9px;background:var(--m);color:var(--gd);display:inline-flex;align-items:center;justify-content:center}.ib .i{margin:0}.ch{display:inline-block;background:var(--m);color:var(--gd);border-radius:14px;padding:5px 12px;margin:0 0 6px 6px;font-size:13px}
 label{display:flex;gap:8px;align-items:center;margin-bottom:10px}label input{width:auto;margin:0}
 </style>
 </head>
 <body>
-<header><i data-i="pill"></i>دليل صيدليات الشطرة<small>ابحث عن الدواء وأرخص سعر قريب منك</small></header>
+<header><i data-i="pill"></i>دليل صيدليات الشطرة</header>
 <main id="app"></main>
 <nav>
 <button data-v="search" onclick="A.v('search')"><i data-i="search"></i>بحث</button>
 <button data-v="cart" onclick="A.v('cart')"><i data-i="cart"></i>السلة<span id="cn"></span></button>
-<button data-v="owner" onclick="A.v('owner')"><i data-i="store"></i>صيدلية</button>
+<button data-v="owner" onclick="A.v('owner')"><i data-i="store"></i>إضافة صيدلية</button>
 <button id="na" style="display:none" data-v="admin" onclick="A.v('admin')"><i data-i="shield"></i>الإدارة<span id="bd"></span></button>
 </nav>
 <script type="module">
@@ -60,7 +61,7 @@ const firebaseConfig = {
 };
 const ADMIN = "admin@shatra.app";
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
-let S = {v:"search", ov:"login", mode:"drug", q:"", user:null, me:null, ph:[], dr:[], all:[], cart:(()=>{try{return JSON.parse(localStorage.getItem("cart")||"[]")}catch(e){return[]}})(), pg:null, pq:"", tp:0, adm:0}, unsub = null;
+let S = {v:"search", ov:"login", mode:"drug", q:"", user:null, me:null, ph:[], dr:[], all:[], cart:(()=>{try{return JSON.parse(localStorage.getItem("cart")||"[]")}catch(e){return[]}})(), pg:null, pq:"", pop:[], sg:[], loaded:false, tp:0, adm:0}, unsub = null;
 const $ = s => document.querySelector(s);
 const E = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const isAdmin = () => S.user && S.user.email === ADMIN;
@@ -87,7 +88,8 @@ const IC = {
   phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/>',
   chat: '<path d="M4 5h16v11H9l-5 4z"/>',
   send: '<path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"/>',
-  plus: '<path d="M12 5v14M5 12h14"/>'
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  spark: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>'
 };
 const ic = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${IC[n]}</svg>`;
 document.querySelectorAll("[data-i]").forEach(e => e.outerHTML = ic(e.dataset.i));
@@ -101,7 +103,8 @@ async function load() {
     S.ph = a.docs.map(d => ({id: d.id, ...d.data()}));
     const b = await getDocs(collection(db, "drugs"));
     S.dr = b.docs.map(d => ({id: d.id, ...d.data()}));
-  } catch (e) { err(e); }
+    S.loaded = true;
+  } catch (e) { S.loaded = true; err(e); }
 }
 
 const card = (p, i) => `<div class="${i ? "s" : "c"}"><b class="k" onclick="A.pg('${E(p.id)}')">${E(p.name)} ›</b><div class="m">${ic("pin")}${E(p.address)}</div>
@@ -109,18 +112,37 @@ const card = (p, i) => `<div class="${i ? "s" : "c"}"><b class="k" onclick="A.pg
 
 const drow = d => `${d.img ? `<img class="di" src="${d.img}">` : ""}<b>${E(d.name)}</b><span class="pr">${E(d.price)} د.ع</span><div style="clear:both"></div><button class="o w" style="margin-top:8px" onclick="A.cart('${E(d.id)}',this)">${ic("cart")}أضف للسلة</button>`;
 
+const nz = s => String(s || "").toLowerCase().replace(/[\u064B-\u065F\u0640]/g, "").replace(/[أإآ]/g, "ا").replace(/ى/g, "ي").replace(/ة/g, "ه").replace(/ؤ/g, "و").replace(/ئ/g, "ي").replace(/\s+/g, " ").trim();
+const lev = (a, b) => { const m = a.length, n = b.length, d = Array.from({length: m + 1}, (_, i) => { const r = Array(n + 1).fill(0); r[0] = i; return r; }); for (let j = 1; j <= n; j++) d[0][j] = j; for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[m][n]; };
+const dist = (name, q) => { const n = nz(name); if (n.includes(q)) return 0; const t = q.length >= 6 ? 2 : q.length >= 4 ? 1 : 0; let best = 9; for (const w of n.split(" ")) best = Math.min(best, lev(q, w), lev(q, w.slice(0, q.length))); return best <= t ? best : 9; };
+const popular = () => { const ok = new Set(S.ph.map(p => p.id)), m = {}; S.dr.forEach(d => { if (!ok.has(d.pharmacyId) || d.available === false) return; const k = nz(d.name); (m[k] = m[k] || {n: d.name, s: new Set()}).s.add(d.pharmacyId); }); return Object.values(m).sort((a, b) => b.s.size - a.s.size).slice(0, 5); };
+const dres = (d, p, best) => `<div class="c">${d.img ? `<img class="di" src="${d.img}">` : ""}<div class="r"><span><b>${E(d.name)}</b>${best ? '<span class="bg">الأرخص</span>' : ""}</span><span class="pr">${E(d.price)} د.ع</span></div><div class="r2"><span class="k" onclick="A.pg('${E(p.id)}')"><span class="av">${E(p.name.trim().charAt(0))}</span>${E(p.name)} ›</span><span class="ia"><a href="tel:${tel(p.phone)}">${ic("phone")}</a><a href="${wa(p.phone)}">${ic("chat")}</a><button onclick="A.cart('${E(d.id)}',this)">${ic("cart")}</button></span></div></div>`;
+
 function res() {
-  const q = S.q.trim().toLowerCase(), pm = Object.fromEntries(S.ph.map(p => [p.id, p]));
+  if (!S.loaded) return '<p class="m">جارٍ التحميل...</p>';
+  const q = nz(S.q), pm = Object.fromEntries(S.ph.map(p => [p.id, p]));
   if (S.mode === "ph") {
-    const l = S.ph.filter(p => !q || p.name.toLowerCase().includes(q));
+    const l = S.ph.filter(p => !q || dist(p.name, q) < 9);
     return l.map(p => card(p)).join("") || '<p class="m">لا توجد صيدليات مطابقة</p>';
   }
-  if (!q) return '<p class="m">اكتب اسم الدواء لتظهر الصيدليات المتوفر فيها وأسعاره</p>';
-  const l = S.dr.filter(d => pm[d.pharmacyId] && d.available !== false && d.name.toLowerCase().includes(q)).sort((a, b) => a.price - b.price);
-  return l.map(d => `<div class="c">${drow(d)}${card(pm[d.pharmacyId], 1)}</div>`).join("") || '<p class="m">لم نجد هذا الدواء في أي صيدلية</p>';
+  if (!q) {
+    S.pop = popular();
+    return S.pop.length ? "<h3>أدوية شائعة</h3>" + S.pop.map((x, i) => `<div class="pop k" onclick="A.pick('pop',${i})"><span class="ib">${ic("pill")}</span><b>${E(x.n)}</b><span class="m">${x.s.size} صيدلية</span></div>`).join("") : '<p class="m">ستظهر هنا الأدوية الشائعة عندما تضيف الصيدليات أدويتها.</p>';
+  }
+  const l = S.dr.filter(d => pm[d.pharmacyId] && d.available !== false).map(d => ({d, k: dist(d.name, q)})).filter(x => x.k < 9);
+  if (!l.length) return `<p class="m">لم نجد «${E(S.q)}». جرّب كلمة أخرى أو اكتب جزءاً من الاسم.</p>`;
+  l.sort((a, b) => a.k - b.k);
+  const names = []; l.forEach(x => { if (!names.some(n => nz(n) === nz(x.d.name))) names.push(x.d.name); });
+  S.sg = names;
+  let hint = "";
+  if (l[0].k > 0) hint += `<div class="c">${ic("spark")}هل تقصد: <b class="k" onclick="A.pick('sg',0)">${E(names[0])}</b>؟</div>`;
+  if (names.length > 1) hint += "<div>" + names.slice(0, 5).map((n, i) => `<span class="ch k" onclick="A.pick('sg',${i})">${E(n)}</span>`).join("") + "</div>";
+  const g = {}; l.forEach(x => (g[nz(x.d.name)] = g[nz(x.d.name)] || []).push(x.d.price));
+  l.sort((a, b) => a.d.price - b.d.price);
+  return hint + `<p class="m">${l.length} نتيجة، مرتبة من الأرخص</p>` + l.map(x => { const arr = g[nz(x.d.name)]; return dres(x.d, pm[x.d.pharmacyId], arr.length > 1 && x.d.price === Math.min(...arr)); }).join("");
 }
 
-const vSearch = () => S.pg ? vPh() : `<div class="tg"><button class="${S.mode === "drug" ? "on" : ""}" onclick="A.mode('drug')">${ic("pill")}دواء</button><button class="${S.mode === "ph" ? "on" : ""}" onclick="A.mode('ph')">${ic("store")}صيدلية</button></div>
+const vSearch = () => S.pg ? vPh() : `<div class="tg"><button class="${S.mode === "drug" ? "on" : ""}" onclick="A.mode('drug')">${ic("pill")}دواء</button><button class="${S.mode === "ph" ? "on" : ""}" onclick="A.mode('ph')">الصيدليات</button></div>
 <input id="q" placeholder="${S.mode === "drug" ? "ابحث عن دواء..." : "ابحث عن صيدلية..."}" value="${E(S.q)}" oninput="A.q(this.value)"><div id="res">${res()}</div>`;
 
 const pl = () => { const q = S.pq.trim().toLowerCase(); return S.dr.filter(d => d.pharmacyId === S.pg && d.available !== false && d.name.toLowerCase().includes(q)).map(d => `<div class="c">${drow(d)}</div>`).join("") || '<p class="m">لا توجد أدوية</p>'; };
@@ -135,8 +157,8 @@ function vOwner() {
 <input id="n" placeholder="اسم الصيدلية"><input id="a" placeholder="العنوان (مثال: الشطرة - السوق)"><input id="p" type="tel" placeholder="رقم الهاتف / واتساب">
 <input id="e" type="email" placeholder="الإيميل"><input id="w" type="password" placeholder="كلمة المرور (6 أحرف على الأقل)">
 <button class="w" onclick="A.reg()">إرسال الطلب</button><button class="o w" style="margin-top:8px" onclick="A.ov('login')">لدي حساب</button>`;
-    return `<h3>دخول صاحب صيدلية</h3><input id="e" type="email" placeholder="الإيميل"><input id="w" type="password" placeholder="كلمة المرور">
-<button class="w" onclick="A.login()">دخول</button><button class="o w" style="margin-top:8px" onclick="A.ov('reg')">${ic("plus")}إضافة صيدلية جديدة</button>`;
+    return `<button class="o w" style="margin-bottom:10px" onclick="A.ov('reg')">${ic("plus")}إضافة صيدلية</button><input id="e" type="email" placeholder="الإيميل"><input id="w" type="password" placeholder="كلمة المرور">
+<button class="w" onclick="A.login()">دخول</button>`;
   }
   if (!S.me) return '<p class="m">جارٍ التحميل...</p>' + outBtn;
   const m = S.me, head = `<div class="c"><b>${E(m.name)}</b><div class="m">${E(u.email)}</div></div>`;
@@ -179,10 +201,11 @@ function render() {
 
 window.A = {
   v(x) { S.v = x; S.pg = null; if (x === "owner") { if (++S.tp >= 5) S.adm = 1; } else S.tp = 0; render(); if (x === "search") load().then(() => $("#res") && ($("#res").innerHTML = res())); },
-  mode(m) { S.mode = m; render(); },
+  mode(m) { S.mode = m; S.q = ""; render(); },
+  pick(t, i) { S.mode = "drug"; S.q = t === "pop" ? S.pop[i].n : S.sg[i]; render(); },
   pg(id) { S.pg = id; S.pq = ""; render(); },
   pq(v) { S.pq = v; $("#pl").innerHTML = pl(); },
-  cart(id, b) { const d = S.dr.find(x => x.id === id); if (!d) return; const c = S.cart.find(x => x.id === id); c ? c.q++ : S.cart.push({id, name: d.name, price: d.price, ph: d.pharmacyId, q: 1}); sv(); cn(); if (b) b.textContent = "✓ أُضيف للسلة"; },
+  cart(id, b) { const d = S.dr.find(x => x.id === id); if (!d) return; const c = S.cart.find(x => x.id === id); c ? c.q++ : S.cart.push({id, name: d.name, price: d.price, ph: d.pharmacyId, q: 1}); sv(); cn(); if (b) { b.style.background = "var(--g)"; b.style.color = "var(--on)"; } },
   qty(id, n) { const c = S.cart.find(x => x.id === id); c.q += n; if (c.q < 1) S.cart = S.cart.filter(x => x !== c); sv(); render(); },
   async clr() { if (await ask("تأكيد تفريغ السلة؟", "تفريغ")) { S.cart = []; sv(); render(); } },
   send(id) { const p = S.ph.find(x => x.id === id), l = S.cart.filter(x => x.ph === id); let t = 0; const m = "السلام عليكم، أريد طلب:\n" + l.map(x => { t += x.price * x.q; return `- ${x.name} × ${x.q} = ${x.price * x.q} د.ع`; }).join("\n") + `\nالمجموع: ${t} د.ع`; window.open(wa(p.phone) + "?text=" + encodeURIComponent(m), "_blank"); },
