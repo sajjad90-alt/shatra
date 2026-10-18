@@ -131,6 +131,8 @@ nav button.on{background:linear-gradient(160deg,#17428F,#0B2559);box-shadow:0 10
 
 body::before{opacity:.16}
 body{min-height:100vh;display:flex;flex-direction:column;box-sizing:border-box;padding-bottom:104px}header{flex:none}main{width:100%;margin:0 auto}
+.pop .pt{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:6px}.pop .pt b{flex:none;font-size:18px;line-height:1.3}.pop .bq{font-size:11px;padding:3px 9px}.pop .bq .i{width:13px;height:13px;margin-inline-end:3px}
+.di{cursor:zoom-in}.zm{position:fixed;inset:0;z-index:99;background:rgba(11,37,89,.88);display:flex;align-items:center;justify-content:center;padding:16px}.zm img{max-width:100%;max-height:100%;border-radius:16px;background:#fff}
 </style>
 </head>
 <body>
@@ -145,7 +147,7 @@ body{min-height:100vh;display:flex;flex-direction:column;box-sizing:border-box;p
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import {getFirestore,collection,doc,setDoc,getDoc,getDocs,addDoc,updateDoc,deleteDoc,query,where,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import {getFirestore,collection,doc,setDoc,getDoc,getDocs,addDoc,updateDoc,deleteDoc,query,where,onSnapshot,serverTimestamp,Timestamp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCun8KAeQ1t92RQGAiSXML_S7p2nugn204",
@@ -157,7 +159,7 @@ const firebaseConfig = {
 };
 const ADMIN = "admin@shatra.app";
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
-let S = {v:"search", ov:"login", mode:"drug", q:"", user:null, me:null, ph:[], dr:[], all:[], cart:(()=>{try{return JSON.parse(localStorage.getItem("cart")||"[]")}catch(e){return[]}})(), pg:null, pq:"", pop:[], sg:[], loaded:false, meDone:false, meErr:"", tp:0, adm:0}, unsub = null;
+let S = {v:"search", ov:"login", mode:"drug", q:"", user:null, me:null, ph:[], dr:[], all:[], cart:(()=>{try{return JSON.parse(localStorage.getItem("cart")||"[]")}catch(e){return[]}})(), pg:null, pq:"", pop:[], sg:[], loaded:false, lt:0, meDone:false, meErr:"", tp:0, adm:0}, unsub = null;
 const $ = s => document.querySelector(s);
 const E = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const isAdmin = () => S.user && S.user.email === ADMIN;
@@ -191,14 +193,22 @@ const ic = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${IC[n]}<
 document.querySelectorAll("[data-i]").forEach(e => e.outerHTML = ic(e.dataset.i));
 const sv = () => { try { localStorage.setItem("cart", JSON.stringify(S.cart)); } catch (e) {} };
 const cn = () => { $("#cn").textContent = S.cart.reduce((a, x) => a + x.q, 0) || ""; };
-const shrink = f => new Promise(r => { if (!f) return r(""); const i = new Image(); i.onload = () => { const k = Math.min(1, 240 / Math.max(i.width, i.height)), c = document.createElement("canvas"); c.width = i.width * k; c.height = i.height * k; c.getContext("2d").drawImage(i, 0, 0, c.width, c.height); r(c.toDataURL("image/jpeg", .6)); }; i.onerror = () => r(""); i.src = URL.createObjectURL(f); });
+const shrink = f => new Promise(r => { if (!f) return r(""); const i = new Image(); i.onload = () => { const k = Math.min(1, 360 / Math.max(i.width, i.height)), c = document.createElement("canvas"); c.width = i.width * k; c.height = i.height * k; c.getContext("2d").drawImage(i, 0, 0, c.width, c.height); r(c.toDataURL("image/jpeg", .55)); }; i.onerror = () => r(""); i.src = URL.createObjectURL(f); });
+
+const idb = (() => { let o; try { o = indexedDB.open("shatra", 1); o.onupgradeneeded = () => o.result.createObjectStore("k"); } catch (e) {} const d = new Promise(r => { if (!o) return r(null); o.onsuccess = () => r(o.result); o.onerror = () => r(null); }); const tx = async (m, f) => { const x = await d; if (!x) return; return new Promise(r => { const q = f(x.transaction("k", m).objectStore("k")); q.onsuccess = () => r(q.result); q.onerror = () => r(); }); }; return {get: k => tx("readonly", s => s.get(k)), set: (k, v) => tx("readwrite", s => s.put(v, k))}; })();
 
 async function load() {
   try {
+    S.lt = Date.now();
     const a = await getDocs(query(collection(db, "pharmacies"), where("status", "==", "approved")));
     S.ph = a.docs.map(d => ({id: d.id, ...d.data()}));
-    const b = await getDocs(collection(db, "drugs"));
-    S.dr = b.docs.map(d => ({id: d.id, ...d.data()}));
+    let c = (await idb.get("drugs")) || {t: 0, m: {}, f: Date.now()};
+    if (Date.now() - c.f > 2592e6) c = {t: 0, m: {}, f: Date.now()};
+    const b = await getDocs(c.t ? query(collection(db, "drugs"), where("updatedAt", ">=", Timestamp.fromMillis(c.t))) : collection(db, "drugs"));
+    let t = c.t || 1;
+    b.docs.forEach(d => { const x = d.data(), u = x.updatedAt ? x.updatedAt.toMillis() : 0; c.m[d.id] = {id: d.id, ...x, updatedAt: u}; if (u > t) t = u; });
+    c.t = t; await idb.set("drugs", c);
+    S.dr = Object.values(c.m).filter(d => !d.deleted);
     S.loaded = true;
   } catch (e) { S.loaded = true; err(e); }
 }
@@ -206,13 +216,13 @@ async function load() {
 const card = (p, i) => `<div class="${i ? "s" : "c"}"><b class="k" onclick="A.pg('${E(p.id)}')">${E(p.name)} ›</b><div class="m">${ic("pin")}${E(p.address)}</div>
 <div class="b"><a href="tel:${tel(p.phone)}">${ic("phone")}اتصال</a><a href="${wa(p.phone)}">${ic("chat")}واتساب</a></div></div>`;
 
-const drow = d => `${d.img ? `<img class="di" src="${d.img}">` : ""}<b>${E(d.name)}</b><span class="pr">${E(d.price)} د.ع</span><div style="clear:both"></div><button class="o w" style="margin-top:8px" onclick="A.cart('${E(d.id)}',this)">${ic("cart")}أضف للسلة</button>`;
+const drow = d => `${d.img ? `<img class="di" src="${E(d.img)}" onclick="A.zoom(this.src)">` : ""}<b>${E(d.name)}</b><span class="pr">${E(d.price)} د.ع</span><div style="clear:both"></div><button class="o w" style="margin-top:8px" onclick="A.cart('${E(d.id)}',this)">${ic("cart")}أضف للسلة</button>`;
 
 const nz = s => String(s || "").toLowerCase().replace(/[\u064B-\u065F\u0640]/g, "").replace(/[أإآ]/g, "ا").replace(/ى/g, "ي").replace(/ة/g, "ه").replace(/ؤ/g, "و").replace(/ئ/g, "ي").replace(/\s+/g, " ").trim();
 const lev = (a, b) => { const m = a.length, n = b.length, d = Array.from({length: m + 1}, (_, i) => { const r = Array(n + 1).fill(0); r[0] = i; return r; }); for (let j = 1; j <= n; j++) d[0][j] = j; for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[m][n]; };
 const dist = (name, q) => { const n = nz(name); if (n.includes(q)) return 0; const t = q.length >= 6 ? 2 : q.length >= 4 ? 1 : 0; let best = 9; for (const w of n.split(" ")) best = Math.min(best, lev(q, w), lev(q, w.slice(0, q.length))); return best <= t ? best : 9; };
 const popular = () => { const ok = new Set(S.ph.map(p => p.id)), m = {}; S.dr.forEach(d => { if (!ok.has(d.pharmacyId) || d.available === false) return; const k = nz(d.name); (m[k] = m[k] || {n: d.name, s: new Set()}).s.add(d.pharmacyId); }); return Object.values(m).sort((a, b) => b.s.size - a.s.size).slice(0, 5); };
-const dres = (d, p, best) => `<div class="c">${d.img ? `<img class="di" src="${d.img}">` : ""}<div class="r"><span><b>${E(d.name)}</b>${best ? '<span class="bg">الأرخص</span>' : ""}</span><span class="pr">${E(d.price)} د.ع</span></div><div class="r2"><span class="k" onclick="A.pg('${E(p.id)}')"><span class="av">${E(p.name.trim().charAt(0))}</span>${E(p.name)} ›</span><span class="ia"><a href="tel:${tel(p.phone)}">${ic("phone")}</a><a href="${wa(p.phone)}">${ic("chat")}</a><button onclick="A.cart('${E(d.id)}',this)">${ic("cart")}</button></span></div></div>`;
+const dres = (d, p, best) => `<div class="c">${d.img ? `<img class="di" src="${E(d.img)}" onclick="A.zoom(this.src)">` : ""}<div class="r"><span><b>${E(d.name)}</b>${best ? '<span class="bg">الأرخص</span>' : ""}</span><span class="pr">${E(d.price)} د.ع</span></div><div class="r2"><span class="k" onclick="A.pg('${E(p.id)}')"><span class="av">${E(p.name.trim().charAt(0))}</span>${E(p.name)} ›</span><span class="ia"><a href="tel:${tel(p.phone)}">${ic("phone")}</a><a href="${wa(p.phone)}">${ic("chat")}</a><button onclick="A.cart('${E(d.id)}',this)">${ic("cart")}</button></span></div></div>`;
 
 function res() {
   if (!S.loaded) return '<p class="m">جارٍ التحميل...</p>';
@@ -223,7 +233,7 @@ function res() {
   }
   if (!q) {
     S.pop = popular();
-    return (S.pop.length ? "<h3>أدوية شائعة</h3>" + S.pop.map((x, i) => `<div class="pop k t${i % 4}" onclick="A.pick('pop',${i})"><span class="ib">${ic("pill")}</span><b>${E(x.n)}</b><span class="bq">${ic("store")}متوفر في ${x.s.size} صيدلية</span><span class="cv">‹</span></div>`).join("") : '<p class="m">ستظهر هنا الأدوية الشائعة عندما تضيف الصيدليات أدويتها.</p>') ;
+    return (S.pop.length ? "<h3>أدوية شائعة</h3>" + S.pop.map((x, i) => `<div class="pop k t${i % 4}" onclick="A.pick('pop',${i})"><span class="ib">${ic("pill")}</span><div class="pt"><b>${E(x.n)}</b><span class="bq">${ic("store")}متوفر في ${x.s.size} صيدلية</span></div><span class="cv">‹</span></div>`).join("") : '<p class="m">ستظهر هنا الأدوية الشائعة عندما تضيف الصيدليات أدويتها.</p>') ;
   }
   const l = S.dr.filter(d => pm[d.pharmacyId] && d.available !== false).map(d => ({d, k: dist(d.name, q)})).filter(x => x.k < 9);
   if (!l.length) return `<p class="m">لم نجد «${E(S.q)}». جرّب كلمة أخرى أو اكتب جزءاً من الاسم.</p>`;
@@ -267,7 +277,7 @@ function vOwner() {
   const mine = S.dr.filter(d => d.pharmacyId === u.uid);
   return head + `<h3>إضافة دواء</h3><input id="dn" placeholder="اسم الدواء"><input id="dp" type="number" inputmode="numeric" placeholder="السعر بالدينار"><input id="di" type="file" accept="image/*">
 <button class="w" onclick="A.add()">إضافة</button><h3>أدويتي (${mine.length})</h3>` +
-    (mine.map(d => `<div class="c">${d.img ? `<img class="di" src="${d.img}">` : ""}<b>${E(d.name)}</b><span class="pr">${E(d.price)} د.ع</span>
+    (mine.map(d => `<div class="c">${d.img ? `<img class="di" src="${E(d.img)}" onclick="A.zoom(this.src)">` : ""}<b>${E(d.name)}</b><span class="pr">${E(d.price)} د.ع</span>
 <div class="m">${d.available === false ? "غير متوفر" : "متوفر"}</div>
 <div class="b"><button class="o" onclick="A.price('${E(d.id)}')">السعر</button><button class="o" onclick="A.tog('${E(d.id)}',${d.available === false})">${d.available === false ? "توفّر" : "نفد"}</button><button class="d" onclick="A.del('${E(d.id)}')">حذف</button></div></div>`).join("") || '<p class="m">لم تضف أي دواء بعد</p>') + outBtn;
 }
@@ -300,8 +310,9 @@ function render() {
 }
 
 window.A = {
-  v(x) { S.v = x; S.pg = null; if (x === "owner") { if (++S.tp >= 5) S.adm = 1; } else S.tp = 0; render(); if (x === "search") load().then(() => $("#res") && ($("#res").innerHTML = res())); },
+  v(x) { S.v = x; S.pg = null; if (x === "owner") { if (++S.tp >= 5) S.adm = 1; } else S.tp = 0; render(); if (x === "search" && Date.now() - S.lt > 6e4) load().then(() => $("#res") && ($("#res").innerHTML = res())); },
   mode(m) { S.mode = m; S.q = ""; render(); },
+  zoom(src) { const z = document.createElement("div"), i = new Image(); z.className = "zm"; i.src = src; z.appendChild(i); z.onclick = () => z.remove(); document.body.appendChild(z); },
   pick(t, i) { S.mode = "drug"; S.q = t === "pop" ? S.pop[i].n : S.sg[i]; render(); },
   pg(id) { S.pg = id; S.pq = ""; render(); },
   pq(v) { S.pq = v; $("#pl").innerHTML = pl(); },
@@ -330,15 +341,15 @@ window.A = {
   async add() {
     const n = val("dn"), p = Number(val("dp"));
     if (!n || !(p > 0)) return say("اكتب اسم الدواء وسعراً صحيحاً");
-    try { const img = await shrink($("#di").files[0]); await addDoc(collection(db, "drugs"), {pharmacyId: S.user.uid, name: n, price: p, available: true, img}); await load(); render(); } catch (x) { err(x); }
+    try { const img = await shrink($("#di").files[0]); await addDoc(collection(db, "drugs"), {pharmacyId: S.user.uid, name: n, price: p, available: true, img, updatedAt: serverTimestamp()}); await load(); render(); } catch (x) { err(x); }
   },
   async price(id) {
     const p = Number(await askNum("السعر الجديد بالدينار:"));
     if (!(p > 0)) return;
-    try { await updateDoc(doc(db, "drugs", id), {price: p}); await load(); render(); } catch (x) { err(x); }
+    try { await updateDoc(doc(db, "drugs", id), {price: p, updatedAt: serverTimestamp()}); await load(); render(); } catch (x) { err(x); }
   },
-  async tog(id, v) { try { await updateDoc(doc(db, "drugs", id), {available: v}); await load(); render(); } catch (x) { err(x); } },
-  async del(id) { if (!await ask("تأكيد حذف الدواء؟", "حذف")) return; try { await deleteDoc(doc(db, "drugs", id)); await load(); render(); } catch (x) { err(x); } },
+  async tog(id, v) { try { await updateDoc(doc(db, "drugs", id), {available: v, updatedAt: serverTimestamp()}); await load(); render(); } catch (x) { err(x); } },
+  async del(id) { if (!await ask("تأكيد حذف الدواء؟", "حذف")) return; try { await updateDoc(doc(db, "drugs", id), {deleted: true, img: "", updatedAt: serverTimestamp()}); await load(); render(); } catch (x) { err(x); } },
   async set(id, s) { try { await updateDoc(doc(db, "pharmacies", id), {status: s}); await load(); } catch (x) { err(x); } },
   async rm(id) { if (!await ask("تأكيد حذف الصيدلية نهائياً؟", "حذف")) return; try { await deleteDoc(doc(db, "pharmacies", id)); await load(); } catch (x) { err(x); } }
 };
