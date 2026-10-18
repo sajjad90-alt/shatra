@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#EDB9CB">
+<meta name="theme-color" content="#0B2559">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <title>دليل صيدليات الشطرة</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--g:#DC93AE;--gd:#6B1D3E;--p:#F7D9E3;--m:#E7A8BE;--a:#8F2A52;--t:#7A2346;--s:#9A4A6B;--r:#C0392B;--c:#F1C6D6;--n:#EDB9CB;--bd:#E2A9BD;--on:#5E1535;--ca:#FFD6E4}
+:root{--g:#FFB020;--gd:#12306B;--p:#F3F7FC;--m:#E8EFF9;--a:#12306B;--t:#12306B;--s:#6B7A99;--r:#F59E0B;--c:#fff;--n:#0B2559;--bd:#DCE5F2;--on:#0B2559;--ca:#fff}
 *{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
 body{font-family:Cairo,Tahoma,sans-serif;background:var(--p);color:var(--t);padding-bottom:84px}
 header{position:sticky;top:0;z-index:5;background:var(--n);color:var(--t);border-bottom:1px solid var(--bd);padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 10px;font-size:18px;font-weight:800}
@@ -35,11 +35,109 @@ nav button.on{color:#9C2F5C;background:none}nav button.on .i{background:var(--g)
 #bd,#cn{position:absolute;top:0;left:18%;background:var(--r);color:var(--ca);border-radius:10px;font-size:12px;min-width:20px;padding:0 5px}#bd:empty,#cn:empty{display:none}.di{width:64px;height:64px;object-fit:cover;border-radius:10px;float:right;margin-left:10px}.k{cursor:pointer}.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-4px;margin-inline-end:6px}header .i{width:22px;height:22px;vertical-align:-4px}nav .i{display:block;margin:0 auto 2px}.md{position:fixed;inset:0;background:rgba(94,21,53,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:99}.mb{background:var(--c);border-radius:18px;padding:18px;width:100%;max-width:340px}.mb p{margin-bottom:12px;font-weight:700}
 .av{width:22px;height:22px;border-radius:50%;background:var(--g);color:var(--on);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;margin-inline-end:6px;flex:none}.bg{background:var(--g);color:var(--on);border-radius:8px;padding:1px 8px;font-weight:700;font-size:12px;margin-inline:6px}.r{display:flex;align-items:center;justify-content:space-between;gap:6px}.r2{display:flex;justify-content:space-between;align-items:center;margin-top:10px}.ia{display:flex;gap:6px}.ia a,.ia button{background:var(--m);color:var(--gd);border-radius:9px;padding:7px 10px;display:inline-flex;text-decoration:none}.ia .i{margin:0}.pop{display:flex;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--bd)}.pop b{flex:1;font-weight:700}.ib{width:30px;height:30px;border-radius:9px;background:var(--m);color:var(--gd);display:inline-flex;align-items:center;justify-content:center}.ib .i{margin:0}.ch{display:inline-block;background:var(--m);color:var(--gd);border-radius:14px;padding:5px 12px;margin:0 0 6px 6px;font-size:13px}
 label{display:flex;gap:8px;align-items:center;margin-bottom:10px}label input{width:auto;margin:0}
+
+body{padding-bottom:120px}
+header{position:relative;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#0B2559 0%,#17428F 100%);color:#fff;border:0;border-bottom:4px solid #FFB020;border-radius:0 0 50% 50%/0 0 26px 26px;padding:calc(env(safe-area-inset-top,0px) + 22px) 22px 34px;box-shadow:0 6px 18px rgba(11,37,89,.18)}
+header h1{font-size:22px;font-weight:800;line-height:1.3}header h1 b{color:#FFC93C}
+header p{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:15px;font-weight:400;color:#DCE7FA}header p u{display:block;width:26px;height:2px;background:#FFB020}
+.lg{width:62px;height:62px;border-radius:50%;border:3px solid #FFB020;display:flex;align-items:center;justify-content:center;color:#fff;background:rgba(255,255,255,.1)}
+header .i{width:32px;height:32px;margin:0}
+main{padding:18px 16px}
+button{background:linear-gradient(180deg,#FFC53D,#FFA400);color:#0B2559;box-shadow:0 3px 8px rgba(255,164,0,.3)}
+button.o{background:#E8EFF9;color:#12306B;box-shadow:none}button.d{background:#FDE7E7;color:#B42318;box-shadow:none}
+.tg{background:#fff;border-radius:34px;padding:6px;box-shadow:0 4px 16px rgba(18,48,107,.08);margin-bottom:14px}
+.tg button{border-radius:28px;padding:13px 8px;background:none;color:#12306B;box-shadow:none;font-size:16px}
+.tg button.on{background:linear-gradient(180deg,#FFC53D,#FFA400);box-shadow:0 4px 12px rgba(255,164,0,.4)}
+input{background:#fff;border:0;border-radius:30px;padding:16px 20px;box-shadow:0 4px 16px rgba(18,48,107,.08);margin-bottom:16px}
+input:focus{outline:2px solid #FFB020}
+.sb{position:relative}.sb input{padding-inline-start:64px}
+.sbi{position:absolute;inset-inline-start:7px;top:7px;width:46px;height:46px;border-radius:50%;background:linear-gradient(180deg,#FFC53D,#FFA400);color:#fff;display:flex;align-items:center;justify-content:center;pointer-events:none}.sbi .i{margin:0;width:22px;height:22px}
+.c{border-radius:20px;border:0;box-shadow:0 4px 16px rgba(18,48,107,.08)}
+.s{background:#F3F7FC}
+h3{border-inline-start:4px solid #FFB020;padding-inline-start:10px;font-size:20px;margin:18px 0 12px}
+.pop{--k:#1FA58A;--kb:#E1F4EE;background:#fff;border:0;border-inline-start:5px solid var(--k);border-radius:20px;padding:14px;margin-bottom:12px;gap:12px;box-shadow:0 4px 16px rgba(18,48,107,.08)}
+
+.pop .ib{width:56px;height:56px;border-radius:16px;background:var(--kb);color:var(--k)}.pop .ib .i{width:28px;height:28px}
+.pop b{font-size:18px;color:#12306B}
+.pop .bq{display:inline-flex;align-items:center;font-size:12px;font-weight:700;color:var(--k);background:var(--kb);border-radius:20px;padding:7px 12px}.pop .bq .i{width:16px;height:16px;margin-inline-end:5px}
+.pop .cv{width:34px;height:34px;border-radius:50%;background:var(--kb);color:#12306B;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800}
+.bn{display:flex;align-items:center;gap:14px;margin-top:20px;padding:18px;border-radius:22px;background:linear-gradient(120deg,#FFF3D6,#FFE7B0);box-shadow:0 4px 16px rgba(18,48,107,.08);border:1px solid #FFE2A0}
+.bn .bp{width:56px;height:56px;border-radius:50%;background:linear-gradient(180deg,#FFC53D,#FFA400);color:#fff;display:flex;align-items:center;justify-content:center}.bn .bp .i{width:28px;height:28px;margin:0}
+.bn b{display:block;font-size:19px;color:#12306B}.bn small{color:#6B7A99;font-size:14px}
+.ia a,.ia button{background:#E8EFF9;color:#12306B;box-shadow:none}
+.av,.bg,.ch{background:#FFE7B0;color:#12306B}.ch{background:#E8EFF9}
+.pr{background:#12306B;color:#fff}
+.md{background:rgba(11,37,89,.5)}.mb{border-radius:22px}
+nav{left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);background:#fff;border:0;border-radius:32px;padding:8px;gap:4px;box-shadow:0 8px 28px rgba(11,37,89,.2)}
+nav button{background:none;color:#12306B;box-shadow:none;border-radius:24px;padding:10px 4px 8px;font-weight:800}
+nav button .i{width:24px;height:24px}
+nav button.on{background:#0B2559;color:#fff;box-shadow:none}
+nav button.on::after{content:"";display:block;width:34px;height:3px;border-radius:2px;background:#FFB020;margin:4px auto 0}
+nav button.on .i{background:none;color:#fff;width:24px;height:24px;padding:0;border-radius:0}
+#bd,#cn{background:#F59E0B;color:#fff;top:2px}
+
+header{display:block;position:relative;border:0;border-radius:0;box-shadow:none;padding:0;color:#fff;background:#0B2559 url(header.jpg) center bottom/cover no-repeat;height:calc(env(safe-area-inset-top,0px) + min(35.4vw,230px));margin-bottom:6px}
+header>div{position:absolute;right:23%;top:calc(env(safe-area-inset-top,0px) + min(35.4vw,230px)*.36)}
+header h1{font-size:min(5.5vw,30px);line-height:1.25;text-shadow:0 2px 6px rgba(0,0,0,.35);white-space:nowrap}
+header p{margin-top:min(2.2vw,12px);margin-inline-end:9%;font-size:min(4vw,20px);gap:min(2vw,10px);white-space:nowrap}
+header p u{width:min(7vw,36px)}
+
+body{background:#F3F7FC url(bg-pattern.svg) 0 0/130px}
+body::before{content:"";position:fixed;z-index:0;pointer-events:none;inset-inline-start:-10px;bottom:96px;width:min(78vw,340px);height:min(66vw,290px);background:center bottom/contain no-repeat;opacity:.28}
+body[data-v=search]::before{background-image:url(art-search.svg)}
+body[data-v=cart]::before{background-image:url(art-cart.svg)}
+body[data-v=owner]::before,body[data-v=admin]::before{background-image:url(art-store.svg)}
+header,main,nav{position:relative;z-index:1}nav{position:fixed}
+main{animation:fi .35s ease}@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.c,.pop,.tg,.sb input,.bn{backdrop-filter:blur(6px)}
+.pop{transition:transform .15s}.pop:active{transform:scale(.98)}
+.bn{position:relative;overflow:hidden;min-height:96px}.bn .ba{position:absolute;inset-inline-end:0;bottom:0;height:100%;opacity:.95}
+.tg button{position:relative;overflow:hidden}
+
+
+body{background:url(bg-shelves.svg) 0 0/230px,radial-gradient(circle at 95% 8%,#FFF1CF 0,transparent 38%),radial-gradient(circle at 0 55%,#D9E8FF 0,transparent 42%),#F3F7FC;background-attachment:scroll,fixed,fixed,fixed}
+h3{border-inline-start:0;padding-inline-start:0;font-size:21px;font-weight:800;color:#0B2559;display:flex;align-items:center;gap:10px}
+h3::before{content:"";width:6px;height:26px;border-radius:4px;background:linear-gradient(#FFD166,#FF8A00);box-shadow:0 3px 8px rgba(255,138,0,.4)}
+.tg{background:linear-gradient(180deg,#fff,#EEF4FD);box-shadow:0 10px 26px -10px rgba(18,48,107,.3),inset 0 1px 0 #fff}
+.tg button.on{background:linear-gradient(160deg,#FFD166 0%,#FFB020 50%,#FF8A00 100%);box-shadow:0 8px 18px -4px rgba(255,138,0,.55),inset 0 2px 0 rgba(255,255,255,.55)}
+input{box-shadow:0 10px 26px -10px rgba(18,48,107,.3),inset 0 1px 0 #fff}input:focus{outline:0;box-shadow:0 0 0 4px rgba(255,176,32,.3),0 10px 26px -10px rgba(18,48,107,.3)}
+.sbi{background:linear-gradient(160deg,#FFD166,#FF8A00);box-shadow:0 6px 14px -2px rgba(255,138,0,.6),inset 0 2px 0 rgba(255,255,255,.5)}
+.pop{--k:#FFB020;--k2:#FF8A00;--kb:#FFF0CC;--sh:rgba(255,138,0,.45);position:relative;overflow:hidden;border:0;border-radius:24px;padding:14px;gap:12px;background:linear-gradient(115deg,#fff 35%,var(--kb) 130%);box-shadow:0 14px 28px -12px var(--sh),0 2px 6px rgba(18,48,107,.05)}
+.pop.t1{--k:#2DD4A0;--k2:#0E9F6E;--kb:#D6F5EA;--sh:rgba(14,159,110,.45)}
+.pop.t2{--k:#4DA6FF;--k2:#2563EB;--kb:#D9EAFF;--sh:rgba(37,99,235,.45)}
+.pop.t3{--k:#A78BFA;--k2:#6D3FE0;--kb:#E8E0FF;--sh:rgba(109,63,224,.45)}
+.pop::before{content:"";position:absolute;inset-block:16px;inset-inline-start:0;width:5px;border-radius:6px 0 0 6px;background:linear-gradient(var(--k),var(--k2))}
+.pop::after{content:"";position:absolute;inset-inline-end:-34px;top:-46px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,var(--kb) 0,transparent 68%);pointer-events:none}
+.pop>*{position:relative;z-index:1}
+.pop .ib{width:60px;height:60px;border-radius:19px;background:linear-gradient(145deg,var(--k),var(--k2));color:#fff;box-shadow:0 10px 18px -6px var(--sh),inset 0 2px 0 rgba(255,255,255,.45)}
+.pop .ib .i{width:30px;height:30px;stroke-width:2.2;filter:drop-shadow(0 2px 2px rgba(0,0,0,.2))}
+.pop b{font-size:19px;font-weight:800;color:#0B2559;min-width:0}
+.pop .bq{white-space:nowrap;font-size:12px;padding:7px 11px;background:rgba(255,255,255,.9);color:var(--k2);border:1.5px solid var(--kb);box-shadow:0 4px 10px -4px var(--sh)}
+.pop .bq .i{width:15px;height:15px;margin-inline-end:4px}
+.pop .cv{width:38px;height:38px;background:linear-gradient(145deg,var(--k),var(--k2));color:#fff;box-shadow:0 8px 14px -4px var(--sh),inset 0 2px 0 rgba(255,255,255,.4)}
+.c{background:linear-gradient(135deg,#fff 40%,#EEF4FF);border:1px solid #fff;box-shadow:0 14px 28px -14px rgba(18,48,107,.3)}
+.pr{background:linear-gradient(135deg,#12306B,#2563EB);color:#fff;box-shadow:0 5px 10px -3px rgba(37,99,235,.5)}
+.bg{background:linear-gradient(135deg,#2DD4A0,#0E9F6E);color:#fff}
+.av{background:linear-gradient(145deg,#FFD166,#FF8A00);color:#fff}
+.ia a{background:linear-gradient(145deg,#E3F9EF,#C9F0DE);color:#0E9F6E}.ia button{background:linear-gradient(145deg,#FFD166,#FF8A00);color:#fff;box-shadow:0 5px 10px -3px rgba(255,138,0,.5)}
+.b a:nth-child(1){background:linear-gradient(145deg,#4DA6FF,#2563EB);color:#fff}.b a:nth-child(2){background:linear-gradient(145deg,#2DD4A0,#0E9F6E);color:#fff}
+.bn{background:linear-gradient(120deg,#FFF6DD 0%,#FFE2A0 55%,#FFC95C 100%);border:1px solid #FFE9B8;box-shadow:0 16px 30px -14px rgba(255,138,0,.55)}
+.bn::before{content:"";position:absolute;inset-inline-end:-40px;top:-60px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.75),transparent 70%)}
+.bn>*{position:relative}.bn .ba{position:absolute;height:100%;width:auto;bottom:0;inset-inline-start:auto;inset-inline-end:4px;opacity:.9}.bn{padding-inline-end:120px}
+.bn .bp{box-shadow:0 10px 18px -5px rgba(255,138,0,.65),inset 0 2px 0 rgba(255,255,255,.5)}
+nav{background:rgba(255,255,255,.94);backdrop-filter:blur(14px);box-shadow:0 14px 34px -8px rgba(11,37,89,.35)}
+nav button.on{background:linear-gradient(160deg,#17428F,#0B2559);box-shadow:0 10px 20px -6px rgba(11,37,89,.7),inset 0 1px 0 rgba(255,255,255,.2)}
+#bd,#cn{background:linear-gradient(145deg,#FFD166,#FF8A00)}
+
+.ft{position:relative;z-index:1;max-width:560px;margin:10px auto 0;padding:0 10px;pointer-events:none}.ft img{width:100%;display:block;filter:drop-shadow(0 10px 14px rgba(18,48,107,.18))}
+body::before{opacity:.16}
+body{min-height:100vh;display:flex;flex-direction:column;box-sizing:border-box;padding-bottom:104px}header{flex:none}main{width:100%;margin:0 auto}.ft{margin-top:auto;padding-top:14px;width:100%}
 </style>
 </head>
 <body>
-<header><i data-i="pill"></i>دليل صيدليات الشطرة</header>
+<header><div><h1>دليل صيدليات <b>الشطرة</b></h1><p><u></u>صحتك تهمنا ...<u></u></p></div></header>
 <main id="app"></main>
+<footer class="ft"><img src="footer-pharmacy.svg" alt=""></footer>
 <nav>
 <button data-v="search" onclick="A.v('search')"><i data-i="search"></i>بحث</button>
 <button data-v="cart" onclick="A.v('cart')"><i data-i="cart"></i>السلة<span id="cn"></span></button>
@@ -127,7 +225,7 @@ function res() {
   }
   if (!q) {
     S.pop = popular();
-    return S.pop.length ? "<h3>أدوية شائعة</h3>" + S.pop.map((x, i) => `<div class="pop k" onclick="A.pick('pop',${i})"><span class="ib">${ic("pill")}</span><b>${E(x.n)}</b><span class="m">${x.s.size} صيدلية</span></div>`).join("") : '<p class="m">ستظهر هنا الأدوية الشائعة عندما تضيف الصيدليات أدويتها.</p>';
+    return (S.pop.length ? "<h3>أدوية شائعة</h3>" + S.pop.map((x, i) => `<div class="pop k t${i % 4}" onclick="A.pick('pop',${i})"><span class="ib">${ic("pill")}</span><b>${E(x.n)}</b><span class="bq">${ic("store")}متوفر في ${x.s.size} صيدلية</span><span class="cv">‹</span></div>`).join("") : '<p class="m">ستظهر هنا الأدوية الشائعة عندما تضيف الصيدليات أدويتها.</p>') ;
   }
   const l = S.dr.filter(d => pm[d.pharmacyId] && d.available !== false).map(d => ({d, k: dist(d.name, q)})).filter(x => x.k < 9);
   if (!l.length) return `<p class="m">لم نجد «${E(S.q)}». جرّب كلمة أخرى أو اكتب جزءاً من الاسم.</p>`;
@@ -142,8 +240,8 @@ function res() {
   return hint + `<p class="m">${l.length} نتيجة، مرتبة من الأرخص</p>` + l.map(x => { const arr = g[nz(x.d.name)]; return dres(x.d, pm[x.d.pharmacyId], arr.length > 1 && x.d.price === Math.min(...arr)); }).join("");
 }
 
-const vSearch = () => S.pg ? vPh() : `<div class="tg"><button class="${S.mode === "drug" ? "on" : ""}" onclick="A.mode('drug')">${ic("pill")}دواء</button><button class="${S.mode === "ph" ? "on" : ""}" onclick="A.mode('ph')">الصيدليات</button></div>
-<input id="q" placeholder="${S.mode === "drug" ? "ابحث عن دواء..." : "ابحث عن صيدلية..."}" value="${E(S.q)}" oninput="A.q(this.value)"><div id="res">${res()}</div>`;
+const vSearch = () => S.pg ? vPh() : `<div class="tg"><button class="${S.mode === "drug" ? "on" : ""}" onclick="A.mode('drug')">${ic("pill")}أدوية</button><button class="${S.mode === "ph" ? "on" : ""}" onclick="A.mode('ph')">الصيدليات</button></div>
+<div class="sb"><input id="q" placeholder="${S.mode === "drug" ? "ابحث عن دواء أو صيدلية..." : "ابحث عن صيدلية..."}" value="${E(S.q)}" oninput="A.q(this.value)"><span class="sbi">${ic("search")}</span></div><div id="res">${res()}</div>`;
 
 const pl = () => { const q = S.pq.trim().toLowerCase(); return S.dr.filter(d => d.pharmacyId === S.pg && d.available !== false && d.name.toLowerCase().includes(q)).map(d => `<div class="c">${drow(d)}</div>`).join("") || '<p class="m">لا توجد أدوية</p>'; };
 const vPh = () => { const p = S.ph.find(x => x.id === S.pg); if (!p) { S.pg = null; return vSearch(); } return `<button class="o" onclick="A.pg(null)">→ رجوع</button><div style="height:10px"></div>${card(p)}<input placeholder="ابحث في أدوية هذه الصيدلية..." value="${E(S.pq)}" oninput="A.pq(this.value)"><div id="pl">${pl()}</div>`; };
@@ -197,7 +295,7 @@ function vCart() {
 
 function render() {
   document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.v === S.v));
-  const n = S.all.filter(x => x.status === "pending").length;
+  document.body.dataset.v = S.v; const n = S.all.filter(x => x.status === "pending").length;
   $("#bd").textContent = isAdmin() && n ? n : "";
   cn(); $("#na").style.display = S.adm || isAdmin() ? "" : "none";
   $("#app").innerHTML = ({search: vSearch, cart: vCart, owner: vOwner, admin: vAdmin})[S.v]();
