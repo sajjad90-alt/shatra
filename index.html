@@ -135,6 +135,16 @@ body{min-height:100vh;display:flex;flex-direction:column;box-sizing:border-box;p
 .pop .pn{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:7px}.pop .pn b{flex:none;line-height:1.35;word-break:break-word}
 .pop .ib{overflow:hidden}.pop .ib img{width:100%;height:100%;object-fit:cover}
 .di{cursor:zoom-in}.zm{position:fixed;inset:0;z-index:99;background:rgba(11,37,89,.82);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px;animation:fi .2s ease}.zm img{max-width:100%;max-height:80vh;border-radius:22px;background:#fff;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+
+select{width:100%;padding:16px 20px;border:0;border-radius:30px;font:inherit;color:#12306B;background:#fff;box-shadow:0 10px 26px -10px rgba(18,48,107,.3);margin-bottom:16px}
+nav button{font-size:12.5px;padding-inline:2px}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cp{padding:10px;margin-bottom:0}.cp img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px;display:block;margin-bottom:8px;cursor:zoom-in}
+.cp b{display:block;font-size:15px;line-height:1.4;word-break:break-word}
+.cp .pr{float:none;display:inline-block;margin-top:6px}
+.cp .tag{display:inline-block;font-size:11px;color:#6B7A99;margin-top:4px}
+.cp.off{opacity:.55}
+.tg.t4 button{font-size:13px;padding:11px 4px}
 </style>
 </head>
 <body>
@@ -143,6 +153,7 @@ body{min-height:100vh;display:flex;flex-direction:column;box-sizing:border-box;p
 <nav>
 <button data-v="search" onclick="A.v('search')"><i data-i="search"></i>بحث</button>
 <button data-v="cart" onclick="A.v('cart')"><i data-i="cart"></i>السلة<span id="cn"></span></button>
+<button data-v="cos" onclick="A.v('cos')"><i data-i="cos"></i>التجميل</button>
 <button data-v="owner" onclick="A.v('owner')"><i data-i="store"></i>إضافة صيدلية</button>
 <button id="na" style="display:none" data-v="admin" onclick="A.v('admin')"><i data-i="shield"></i>الإدارة<span id="bd"></span></button>
 </nav>
@@ -161,7 +172,7 @@ const firebaseConfig = {
 };
 const ADMIN = "admin@shatra.app";
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
-let S = {cat:[], imgs:{}, imgsLoaded:false, v:"search", ov:"login", mode:"drug", q:"", user:null, me:null, ph:[], dr:[], all:[], cart:(()=>{try{return JSON.parse(localStorage.getItem("cart")||"[]")}catch(e){return[]}})(), pg:null, pq:"", pop:[], sg:[], loaded:false, meDone:false, meErr:"", tp:0, adm:0}, unsub = null;
+let S = {cat:[], imgs:{}, imgsLoaded:false, v:"search", ov:"login", mode:"drug", q:"", user:null, me:null, ph:[], dr:[], all:[], cart:(()=>{try{return JSON.parse(localStorage.getItem("cart")||"[]")}catch(e){return[]}})(), pg:null, pq:"", pop:[], sg:[], loaded:false, meDone:false, meErr:"", tp:0, adm:0, cs:[], cc:"all", cqs:"", csLoaded:false, csErr:""}, unsub = null;
 const $ = s => document.querySelector(s);
 const E = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const isAdmin = () => S.user && S.user.email === ADMIN;
@@ -189,6 +200,7 @@ const IC = {
   chat: '<path d="M4 5h16v11H9l-5 4z"/>',
   send: '<path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
+  cos: '<rect x="8" y="14" width="8" height="7" rx="1.5"/><rect x="9" y="10" width="6" height="4"/><path d="M9 10l1.5-6 4 2.5L15 10"/>',
   spark: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>'
 };
 const ic = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${IC[n]}</svg>`;
@@ -219,7 +231,7 @@ const catHtml = q => {
 };
 const catSec = () => S.cat.length ? (loadImgs(), `<h3>أدوية العراق الشائعة</h3><p class="m">اختر الدواء واكتب سعرك فقط، فيُضاف بصورته إلى صيدليتك.</p><input id="cq" placeholder="ابحث في القائمة (عربي أو English)..." oninput="A.cq()"><div id="cl">${catHtml("")}</div>`) : "";
 fetch("catalog.json").then(r => r.json()).then(j => { S.cat = j; if (S.v === "owner") render(); }).catch(() => {});
-const shrink = f => new Promise(r => { if (!f) return r(""); const i = new Image(); i.onload = () => { const k = Math.min(1, 240 / Math.max(i.width, i.height)), c = document.createElement("canvas"); c.width = i.width * k; c.height = i.height * k; c.getContext("2d").drawImage(i, 0, 0, c.width, c.height); r(c.toDataURL("image/jpeg", .6)); }; i.onerror = () => r(""); i.src = URL.createObjectURL(f); });
+const shrink = (f, sz = 240) => new Promise(r => { if (!f) return r(""); const i = new Image(); i.onload = () => { const k = Math.min(1, sz / Math.max(i.width, i.height)), c = document.createElement("canvas"); c.width = i.width * k; c.height = i.height * k; c.getContext("2d").drawImage(i, 0, 0, c.width, c.height); r(c.toDataURL("image/jpeg", .6)); }; i.onerror = () => r(""); i.src = URL.createObjectURL(f); });
 
 async function load() {
   try {
@@ -307,7 +319,7 @@ function vAdmin() {
   return `<h3>طلبات الانضمام (${pe.length})</h3>` +
     (pe.map(p => row(p, `<button onclick="A.set('${E(p.id)}','approved')">قبول</button><button class="d" onclick="A.set('${E(p.id)}','rejected')">رفض</button>`)).join("") || '<p class="m">لا توجد طلبات جديدة</p>') +
     `<h3>الصيدليات المعتمدة (${ap.length})</h3>` +
-    (ap.map(p => row(p, `<button class="d" onclick="A.rm('${E(p.id)}')">حذف الصيدلية</button>`)).join("") || '<p class="m">لا توجد صيدليات بعد</p>') + outBtn;
+    (ap.map(p => row(p, `<button class="d" onclick="A.rm('${E(p.id)}')">حذف الصيدلية</button>`)).join("") || '<p class="m">لا توجد صيدليات بعد</p>') + adminCos() + outBtn;
 }
 
 function vCart() {
@@ -319,16 +331,42 @@ function vCart() {
   }).join("") + '<button class="d w" onclick="A.clr()">تفريغ السلة</button>';
 }
 
+const CC = {skin: "العناية بالبشرة والجسم", hair: "العناية بالشعر", mk: "المكياج"};
+const CPH = "data:image/svg+xml;charset=utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F9A8D4"/><stop offset="1" stop-color="#DB2777"/></linearGradient></defs><rect width="96" height="96" rx="22" fill="url(#g)"/><path d="M48 18l5 15 15 5-15 5-5 15-5-15-15-5 15-5z" fill="#fff"/></svg>');
+async function loadCos() {
+  try { const r = await getDocs(collection(db, "cosmetics")); S.cs = r.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => (b.createdAt?.seconds || 9e9) - (a.createdAt?.seconds || 9e9)); S.csErr = ""; }
+  catch (e) { S.csErr = e.code || "error"; }
+  S.csLoaded = true;
+}
+const cpl = () => {
+  const k = nz(S.cqs);
+  const l = S.cs.filter(d => d.available !== false && (S.cc === "all" || d.cat === S.cc) && (!k || nz(d.name).includes(k)));
+  return l.map(d => `<div class="c cp"><img src="${d.img || CPH}" onclick="A.zoom(this.src)" alt=""><b>${E(d.name)}</b><span class="tag">${E(CC[d.cat] || "")}</span><br><span class="pr">${E(d.price)} د.ع</span></div>`).join("") || '<p class="m" style="grid-column:1/-1">لا توجد منتجات في هذا القسم بعد</p>';
+};
+const vCos = () => {
+  if (!S.csLoaded) return '<p class="m">جارٍ التحميل...</p>';
+  if (S.csErr) return `<p class="m">تعذر تحميل المنتجات (${E(S.csErr)}). تأكد من إضافة قواعد Firestore الخاصة بالتجميل.</p>`;
+  const t = (k, n) => `<button class="${S.cc === k ? "on" : ""}" onclick="A.cos('${k}')">${n}</button>`;
+  return `<h3>التجميل والعناية</h3><div class="tg t4">${t("all", "الكل")}${t("skin", "البشرة والجسم")}${t("hair", "الشعر")}${t("mk", "المكياج")}</div>
+<div class="sb"><input id="cs" placeholder="ابحث عن منتج..." value="${E(S.cqs)}" oninput="A.cs(this.value)"><span class="sbi">${ic("search")}</span></div><div class="cg" id="cl2">${cpl()}</div>`;
+};
+const adminCos = () => `<h3>منتجات التجميل (${S.cs.length})</h3>
+<select id="xc">${Object.entries(CC).map(([k, n]) => `<option value="${k}">${n}</option>`).join("")}</select>
+<input id="xn" placeholder="اسم المنتج"><input id="xp" type="number" inputmode="numeric" placeholder="السعر بالدينار"><input id="xf" type="file" accept="image/*">
+<button class="w" onclick="A.xadd()">${ic("plus")}إضافة منتج</button><div style="height:12px"></div>` +
+  (S.cs.map(d => `<div class="c"><img class="di" onclick="A.zoom(this.src)" src="${d.img || CPH}"><b>${E(d.name)}</b><span class="pr">${E(d.price)} د.ع</span><div style="clear:both"></div><div class="m">${E(CC[d.cat] || "")} · ${d.available === false ? "غير متوفر" : "متوفر"}</div>
+<div class="b"><button class="o" onclick="A.xprice('${E(d.id)}')">السعر</button><button class="o" onclick="A.xpic('${E(d.id)}')">صورة</button><button class="o" onclick="A.xtog('${E(d.id)}',${d.available === false})">${d.available === false ? "توفّر" : "نفد"}</button><button class="d" onclick="A.xdel('${E(d.id)}')">حذف</button></div></div>`).join("") || '<p class="m">لم تضف أي منتج بعد</p>');
+
 function render() {
   document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.v === S.v));
   document.body.dataset.v = S.v; const n = S.all.filter(x => x.status === "pending").length;
   $("#bd").textContent = isAdmin() && n ? n : "";
   cn(); $("#na").style.display = S.adm || isAdmin() ? "" : "none";
-  $("#app").innerHTML = ({search: vSearch, cart: vCart, owner: vOwner, admin: vAdmin})[S.v]();
+  $("#app").innerHTML = ({search: vSearch, cart: vCart, cos: vCos, owner: vOwner, admin: vAdmin})[S.v]();
 }
 
 window.A = {
-  v(x) { S.v = x; S.pg = null; if (x === "owner") { if (++S.tp >= 5) S.adm = 1; } else S.tp = 0; render(); if (x === "search") load().then(() => $("#res") && ($("#res").innerHTML = res())); },
+  v(x) { S.v = x; S.pg = null; if (x === "owner") { if (++S.tp >= 5) S.adm = 1; } else S.tp = 0; render(); if (x === "search") load().then(() => $("#res") && ($("#res").innerHTML = res())); if (x === "cos" || x === "admin") loadCos().then(() => (S.v === "cos" || S.v === "admin") && render()); },
   mode(m) { S.mode = m; S.q = ""; render(); },
   pick(t, i) { S.mode = "drug"; S.q = t === "pop" ? S.pop[i].n : S.sg[i]; render(); },
   pg(id) { S.pg = id; S.pq = ""; render(); },
@@ -380,6 +418,17 @@ window.A = {
   },
   async tog(id, v) { try { await updateDoc(doc(db, "drugs", id), {available: v}); await load(); render(); } catch (x) { err(x); } },
   async del(id) { if (!await ask("تأكيد حذف الدواء؟", "حذف")) return; try { await deleteDoc(doc(db, "drugs", id)); await load(); render(); } catch (x) { err(x); } },
+  cos(c) { S.cc = c; render(); },
+  cs(v) { S.cqs = v; const e = $("#cl2"); if (e) e.innerHTML = cpl(); },
+  async xadd() {
+    const c = val("xc"), n = val("xn"), p = Number(val("xp"));
+    if (!n || !(p > 0)) return say("اكتب اسم المنتج وسعراً صحيحاً");
+    try { const img = await shrink($("#xf").files[0], 400); await addDoc(collection(db, "cosmetics"), {cat: c, name: n, price: p, available: true, img, createdAt: serverTimestamp()}); await loadCos(); render(); } catch (x) { err(x); }
+  },
+  async xprice(id) { const p = Number(await askNum("السعر الجديد بالدينار:")); if (!(p > 0)) return; try { await updateDoc(doc(db, "cosmetics", id), {price: p}); await loadCos(); render(); } catch (x) { err(x); } },
+  xpic(id) { const f = document.createElement("input"); f.type = "file"; f.accept = "image/*"; f.onchange = async () => { try { const img = await shrink(f.files[0], 400); if (!img) return; await updateDoc(doc(db, "cosmetics", id), {img}); await loadCos(); render(); } catch (x) { err(x); } }; f.click(); },
+  async xtog(id, v) { try { await updateDoc(doc(db, "cosmetics", id), {available: v}); await loadCos(); render(); } catch (x) { err(x); } },
+  async xdel(id) { if (!await ask("تأكيد حذف المنتج؟", "حذف")) return; try { await deleteDoc(doc(db, "cosmetics", id)); await loadCos(); render(); } catch (x) { err(x); } },
   async set(id, s) { try { await updateDoc(doc(db, "pharmacies", id), {status: s}); await load(); } catch (x) { err(x); } },
   async rm(id) { if (!await ask("تأكيد حذف الصيدلية نهائياً؟", "حذف")) return; try { await deleteDoc(doc(db, "pharmacies", id)); await load(); } catch (x) { err(x); } }
 };
